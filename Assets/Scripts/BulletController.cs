@@ -5,7 +5,8 @@ using UnityEngine;
 public class BulletController : MonoBehaviour
 {
 
-    public float lifetime;
+    public float Lifetime;
+    public GameObject MissParticles;
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +27,12 @@ public class BulletController : MonoBehaviour
 
     IEnumerator DeathDelay()
     {
-        yield return new WaitForSeconds(lifetime);
+        yield return new WaitForSeconds(Lifetime);        
         Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        Instantiate(MissParticles, transform.position, transform.rotation);
     }
 }

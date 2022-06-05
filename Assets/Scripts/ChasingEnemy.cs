@@ -8,6 +8,7 @@ public class ChasingEnemy : MonoBehaviour
     Player target;
     public float Speed;
     public int Health;
+    public GameObject DeadEffect;
     public GameObject DeadParticles;
 
     // Start is called before the first frame update
@@ -21,6 +22,7 @@ public class ChasingEnemy : MonoBehaviour
     {
         if (Health <= 0)
         {
+            Instantiate(DeadEffect, transform.position, transform.rotation);
             Instantiate(DeadParticles, transform.position, transform.rotation);
             Destroy(gameObject);
         }
