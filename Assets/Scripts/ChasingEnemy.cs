@@ -7,14 +7,19 @@ public class ChasingEnemy : MonoBehaviour
 
     Player target;
     public float Speed;
-    public int Health;
+    public float Health;
     public GameObject DeadEffect;
     public GameObject DeadParticles;
+
+    bool active = false;
+    GameController game;
 
     // Start is called before the first frame update
     void Start()
     {
-        target = GameObject.FindObjectOfType<Player>();
+        game = FindObjectOfType<GameController>();
+        target = FindObjectOfType<Player>();
+        Invoke("Activate", 0.8f);
     }
 
     // Update is called once per frame
@@ -30,11 +35,22 @@ public class ChasingEnemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        Move();
+        if (active)
+            Move();
+    }
+
+    void Activate()
+    {
+        active = true;
     }
 
     void Move()
     {
+        Vector3 difference = target.transform.position - transform.position;
+        float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+        Quaternion rotation = Quaternion.AngleAxis(rotZ, Vector3.forward);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime);
+
         transform.position = Vector2.MoveTowards(transform.position, target.transform.position, Speed * Time.deltaTime);
     }
 
@@ -43,8 +59,13 @@ public class ChasingEnemy : MonoBehaviour
         if (col.gameObject.CompareTag("Bullet"))
         {
             Destroy(col.gameObject);
-            Health -= 25;
+            Health -= target.Damage;
         }
+    }
+
+    private void OnDestroy()
+    {
+        game.AreEnemiesDead();        
     }
 
 

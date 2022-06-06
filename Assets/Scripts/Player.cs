@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     public float BulletSpeed;
     public float RateOfFire;
     public float Range;
+    public float Damage;
     public GameObject BulletPrefab;
     public GameObject ParticlesPrefab;
     public int MaxHealth;
