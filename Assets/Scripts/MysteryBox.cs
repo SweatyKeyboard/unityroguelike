@@ -6,6 +6,7 @@ public class MysteryBox : MonoBehaviour
 {
 
     public GameObject ParticleSystem;
+    public List<GameObject> PossibleBonuses;
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +24,14 @@ public class MysteryBox : MonoBehaviour
     {
         if (col.gameObject.CompareTag("Bullet"))
         {
+            System.Random r = new System.Random();
+
+            Instantiate(
+                PossibleBonuses[r.Next(PossibleBonuses.Count)],
+                transform.position,
+                Quaternion.Euler(0, 0, r.Next(360)));
             Instantiate(ParticleSystem, transform.position, transform.rotation);
+
             Destroy(gameObject);
             Destroy(col.gameObject);
         }

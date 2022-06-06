@@ -6,7 +6,8 @@ public class BulletController : MonoBehaviour
 {
 
     public float Lifetime;
-    public GameObject MissParticles;
+    public GameObject Particles;
+    public GameObject Splash;
 
     // Start is called before the first frame update
     void Start()
@@ -19,11 +20,6 @@ public class BulletController : MonoBehaviour
     {
         
     }
-    
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        Destroy(gameObject);
-    }
 
     IEnumerator DeathDelay()
     {
@@ -33,6 +29,7 @@ public class BulletController : MonoBehaviour
 
     private void OnDestroy()
     {
-        Instantiate(MissParticles, transform.position, transform.rotation);
+        Instantiate(Particles, transform.position, transform.rotation);
+        Instantiate(Splash, transform.position, transform.rotation);
     }
 }
