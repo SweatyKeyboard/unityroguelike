@@ -14,7 +14,20 @@ public class Common
     {
         HealthK,
         HealthMs,
-        HealthMy
+        HealthMy,
+        Salt,
+        Pepper
+    }
+
+    public enum InteractiveType
+    {
+        Stove
+    }
+
+    public enum RoamingType
+    {
+        FollowPlayer,
+        Random
     }
 
     public struct Coords

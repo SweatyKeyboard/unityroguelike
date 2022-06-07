@@ -36,7 +36,7 @@ public class Entrance : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (Active && collision.CompareTag("Player") && Input.GetKey(KeyCode.Return))
+        if (Active && collision.CompareTag("Player") && Input.GetKey(KeyCode.Space))
         {
             Deactivate();
             game.WalkToStart(XMod, YMod, Id);

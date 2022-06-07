@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -22,9 +23,11 @@ public class Player : MonoBehaviour
     float rotation;
     float lastRotation;
     bool invulnerable = false;
+    GameController game;
 
     void Start()
     {
+        game = FindObjectOfType<GameController>();
         player = GetComponent<Rigidbody2D>();
         lastFire = Time.time;
         hud = FindObjectOfType<HudController>();
@@ -37,24 +40,27 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        float shootHorizontal = Input.GetAxisRaw("HorizontalShooting"),
-              shootVertical = Input.GetAxisRaw("VerticalShooting");
-
-       float moveHorizontal = Input.GetAxisRaw("HorizontalMoving"),
-              moveVertical = Input.GetAxisRaw("VerticalMoving");
-
-        moveInput = new Vector2(moveHorizontal, moveVertical);
-        moveVelocity = Speed * moveInput.normalized;        
-
-        if (shootHorizontal != 0 || shootVertical != 0)
-            rotation = Mathf.Atan2(-shootHorizontal, shootVertical) * Mathf.Rad2Deg;
-
-        if ( (shootHorizontal != 0 || shootVertical != 0)
-              && Time.time > lastFire + RateOfFire
-              && (Math.Abs(shootHorizontal) - Math.Abs(shootVertical) != 0))
+        if (!game.Pause)
         {
-            Shoot(shootHorizontal, shootVertical);
-            lastFire = Time.time;
+            float shootHorizontal = Input.GetAxisRaw("HorizontalShooting"),
+                  shootVertical = Input.GetAxisRaw("VerticalShooting");
+
+            float moveHorizontal = Input.GetAxisRaw("HorizontalMoving"),
+                   moveVertical = Input.GetAxisRaw("VerticalMoving");
+
+            moveInput = new Vector2(moveHorizontal, moveVertical);
+            moveVelocity = Speed * moveInput.normalized;
+
+            if (shootHorizontal != 0 || shootVertical != 0)
+                rotation = Mathf.Atan2(-shootHorizontal, shootVertical) * Mathf.Rad2Deg;
+
+            if ((shootHorizontal != 0 || shootVertical != 0)
+                  && Time.time > lastFire + RateOfFire
+                  && (Math.Abs(shootHorizontal) - Math.Abs(shootVertical) != 0))
+            {
+                Shoot(shootHorizontal, shootVertical);
+                lastFire = Time.time;
+            }
         }
     }
 
@@ -71,6 +77,14 @@ public class Player : MonoBehaviour
             Hurt();
         }
     }
+
+    /*private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("EnemyTrail"))
+        {
+            Hurt();
+        }
+    }*/
 
     void Shoot(float x, float y) 
     {
@@ -107,6 +121,11 @@ public class Player : MonoBehaviour
                 hud.UpdateHP();
                 Invoke("stillAlive", 0.5f);
             }
+        }
+
+        if (Health.Count == 0)
+        {
+            SceneManager.LoadScene("MainMenu");
         }
     }
 

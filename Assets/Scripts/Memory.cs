@@ -5,16 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class Memory
+public class MemoryItem
 {
     public int itemId;
     public Vector3 position;
     public Quaternion rotation;
 
-    public Memory(int i, Vector3 p, Quaternion q)
+    public MemoryItem(int i, Vector3 p, Quaternion q)
     {
         itemId = i;
         position = p;
         rotation = q;
+    }
+}
+
+public class MemoryInteractive
+{
+    public Common.InteractiveType type;
+    public bool condition;
+
+    public MemoryInteractive(Common.InteractiveType t, bool b)
+    {
+        type = t;
+        condition = b;
     }
 }

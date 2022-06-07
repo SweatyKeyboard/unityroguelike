@@ -46,7 +46,7 @@ public class HudController : MonoBehaviour
         }
     }
 
-    public void DrawMiniMap(int[,] rooms, Common.Coords playerPos)
+    public void DrawMiniMap(int[,] rooms, bool[,] visited, Common.Coords playerPos)
     {
         foreach (GameObject mapTile in GameObject.FindGameObjectsWithTag("MapTile"))
             Destroy(mapTile);
@@ -62,7 +62,22 @@ public class HudController : MonoBehaviour
                         mmap.transform.position.y - 0.38f * (y - 2),
                         0);
 
-                    Instantiate(Resources.Load<GameObject>("MiniMapSquare"), pos, mmap.transform.rotation);
+                    GameObject Tile = Resources.Load<GameObject>("MapTile");
+                    if (visited[x, y])
+                    {
+                        if (x != playerPos.x || y != playerPos.y)
+                            Tile.GetComponent<SpriteRenderer>().color = new Color(0.55f, 0.55f, 0.55f, 0.8f);
+                        else
+                            Tile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.8f);
+                    }
+                    else
+                        Tile.GetComponent<SpriteRenderer>().color = new Color(0.3f, 0.3f, 0.3f, 0.8f);
+
+
+                    Instantiate(Tile, pos, mmap.transform.rotation);
+
+                    
+
                 }
             }
 

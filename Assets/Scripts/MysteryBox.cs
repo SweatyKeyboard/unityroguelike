@@ -24,14 +24,14 @@ public class MysteryBox : MonoBehaviour
     {
         if (col.gameObject.CompareTag("Bullet"))
         {
-            System.Random r = new System.Random();
-
-            Instantiate(
-                PossibleBonuses[r.Next(PossibleBonuses.Count)],
-                transform.position,
-                Quaternion.Euler(0, 0, r.Next(360)));
+            if (Random.Range(1, 4) < 3)
+            {
+                Instantiate(
+                    PossibleBonuses[Random.Range(0, PossibleBonuses.Count)],
+                    transform.position,
+                    Quaternion.Euler(0, 0, Random.Range(0, 360)));                                
+            }
             Instantiate(ParticleSystem, transform.position, transform.rotation);
-
             Destroy(gameObject);
             Destroy(col.gameObject);
         }
