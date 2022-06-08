@@ -5,9 +5,10 @@ public class Common
 {
     public enum HealthType
     {
+        Void = -1,
         Ketchup,
+        Mayo,
         Mustard,
-        Mayo
     }
 
     public enum ItemType
@@ -16,7 +17,13 @@ public class Common
         HealthMs,
         HealthMy,
         Salt,
-        Pepper
+        Pepper,
+        Cucumber,
+        Tomato,
+        Cheese,
+        Salad,
+        Bacon,
+        Burger
     }
 
     public enum InteractiveType
@@ -39,6 +46,22 @@ public class Common
         {
             this.x = x;
             this.y = y;
+        }
+
+        public static bool operator ==(Coords c1, Coords c2)
+        {
+            if (c1.x == c2.x && c1.y == c2.y)
+                return true;
+            else
+                return false;
+        }
+
+        public static bool operator !=(Coords c1, Coords c2)
+        {
+            if (c1.x == c2.x && c1.y == c2.y)
+                return false;
+            else
+                return true;
         }
     }
 }
