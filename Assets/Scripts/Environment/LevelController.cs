@@ -178,6 +178,12 @@ public class LevelController : MonoBehaviour
         foreach (GameObject p in GameObject.FindGameObjectsWithTag("PlayerTrail"))
             Destroy(p);
 
+        Interactive[] arr = FindObjectsOfType<Interactive>();
+        for (int c = 0; c < arr.Length; c++)
+        {
+            Destroy(arr[c].gameObject);
+        }
+
         StartCoroutine(
             SmoothColor(GameObject.FindGameObjectWithTag("Overlay").GetComponent<Image>(),
             new Color(0, 0, 0, 1),

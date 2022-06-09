@@ -16,14 +16,16 @@ public class CutlerySpawner : MonoBehaviour
     public void Activate()
     {
         choosenInd = Random.Range(0, Possible.Count);
-        Instantiate(Resources.Load<GameObject>("Objects/Cutlery" + choosenInd), GameObject.FindGameObjectWithTag("Room").transform);
+        GameObject g = Resources.Load<GameObject>("Objects/Cutlery" + choosenInd);
+        Instantiate(g, transform.position, transform.rotation/*, GameObject.FindGameObjectWithTag("Room").transform*/);
         Destroy(gameObject);
     }
 
     public void ActivateOld(int ind)
     {
         choosenInd = ind;
-        Instantiate(Resources.Load<GameObject>("Objects/Cutlery" + choosenInd), GameObject.FindGameObjectWithTag("Room").transform);
+        GameObject g = Resources.Load<GameObject>("Objects/Cutlery" + choosenInd);
+        Instantiate(g, transform.position, transform.rotation/*, GameObject.FindGameObjectWithTag("Room").transform*/);
         Destroy(gameObject);
     }
 
