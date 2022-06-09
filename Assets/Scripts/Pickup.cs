@@ -25,18 +25,22 @@ public class Pickup : MonoBehaviour
             GameController game = FindObjectOfType<GameController>();
             Player player = FindObjectOfType<Player>();
             string message = "";
+            int cost = 0;
+
             switch (Type)
             {
                 case Common.ItemType.HealthK:
                     {
                         FindObjectOfType<Player>().AddHP(Common.HealthType.Ketchup);
                         FindObjectOfType<HudController>().UpdateHP();
+                        cost = 10;
                     } break;
 
                 case Common.ItemType.HealthMy:
                     {
                         FindObjectOfType<Player>().AddHP(Common.HealthType.Mayo);
                         FindObjectOfType<HudController>().UpdateHP();
+                        cost = 12;
                     }
                     break;
 
@@ -44,18 +48,23 @@ public class Pickup : MonoBehaviour
                     {
                         FindObjectOfType<Player>().AddHP(Common.HealthType.Mustard);
                         FindObjectOfType<HudController>().UpdateHP();
+                        cost = 15;
                     }
                     break;
 
                 case Common.ItemType.Salt:
                     {
-                        game.Salt += Random.Range(1, 4);
+                        int rand = Random.Range(1, 4);
+                        game.Salt += rand;
                         GameObject.Find("SaltCounter").GetComponent<Text>().text = game.Salt.ToString();
+                        cost = rand;
                     }
                     break;
 
                 case Common.ItemType.Pepper:
                     {
+                        int rand = Random.Range(1, 4);
+                        cost = rand * 3;
                     }
                     break;
 
@@ -63,12 +72,14 @@ public class Pickup : MonoBehaviour
                     {
                         player.Damage += 0.25f;
                         message = "Урон повышен";
+                        cost = 25;
                     } break;
 
                 case Common.ItemType.Tomato:
                     {
                         player.Range += 0.05f;
                         message = "Дальность стрельбы повышена";
+                        cost = 25;
                     }
                     break;
 
@@ -76,18 +87,22 @@ public class Pickup : MonoBehaviour
                     {
                         player.RateOfFire -= 0.1f;
                         message = "Скорость стрельбы повышена";
-                    }break;
+                        cost = 25;
+                    }
+                    break;
 
                 case Common.ItemType.Salad:
                     {
-                        player.Speed += 0.5f;
+                        player.Speed += 2f;
                         message = "Скорость повышена";
+                        cost = 25;
                     } break;
 
                 case Common.ItemType.Bacon:
                     {
                         player.BulletSpeed += 0.08f;
                         message = "Скорость пуль повышена";
+                        cost = 25;
                     } break;
 
                 case Common.ItemType.Burger:
@@ -95,11 +110,13 @@ public class Pickup : MonoBehaviour
                         player.MaxHealth += 2;
                         message = "Максимальное здоровье повышено";
                         FindObjectOfType<HPPos>().GetUpdates();
+                        cost = 40;
                     }
                     break;
             }
             FindObjectOfType<InfoText>().ShowText(message, 2f);
-
+            FindObjectOfType<GameController>().Score -= cost;
+            FindObjectOfType<GameController>().BonusesCollected++;
 
             Destroy(gameObject);
         }

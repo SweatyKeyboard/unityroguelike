@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
     public float Speed;
     public float Health;
+    public int Cost;
     public GameObject DeadEffect;
     public GameObject DeadParticles;
 
@@ -14,6 +16,7 @@ public class Enemy : MonoBehaviour
 
     public virtual void Start()
     {
+        Health += (int)(Math.Pow(1.5, FindObjectOfType<GameController>().currentLevel) * 2) / 2;
         target = FindObjectOfType<Player>();
         Invoke("Activate", 0.8f);
     }
@@ -77,5 +80,7 @@ public class Enemy : MonoBehaviour
     private void OnDestroy()
     {
         FindObjectOfType<LevelController>().AreEnemiesDead();
+        FindObjectOfType<GameController>().Score += Cost;
+        FindObjectOfType<GameController>().EnemiesKilled++;
     }
 }

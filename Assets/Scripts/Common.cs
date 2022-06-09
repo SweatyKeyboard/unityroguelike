@@ -28,7 +28,8 @@ public class Common
 
     public enum InteractiveType
     {
-        Stove
+        Stove,
+        Cutlery
     }
 
     public enum RoamingType

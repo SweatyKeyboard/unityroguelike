@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,10 +6,20 @@ public class GameController : MonoBehaviour
 {
     public int Salt;
     public bool Pause = false;
+    public int Score;
+    public int Timer;
+    public int EnemiesKilled;
+    public int BonusesCollected;
+    public int RoomsCleared;
+    public int FloorsCompleted;
+    public int currentLevel = 1;
 
-    GameObject PauseMenu;
+    public GameObject PauseMenu;
+    public GameObject EndMenu;
+
     bool pauseClicked = false;
-
+    float nextActTime = 0f;
+    
 
     void Update()
     {
@@ -19,10 +28,25 @@ public class GameController : MonoBehaviour
             pauseClicked = true;
             PauseGame();
         }
+
+        if (Time.timeSinceLevelLoad > nextActTime)
+        {
+            nextActTime += 1f;
+            Score -= 1;
+            Timer++;
+            //FindObjectOfType<InfoText>().GetComponent<Text>().text = Score.ToString();
+        }
     }
 
     void Start()
     {
+        NewGame();
+    }
+
+    public void NewGame()
+    {
+        nextActTime = 0f;
+        Score = 1000;
         float k = 4f / 3f;
         float camera_width_new = (int)(Screen.currentResolution.height * k);
         GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().pixelRect = new Rect(
@@ -31,8 +55,8 @@ public class GameController : MonoBehaviour
                 camera_width_new,
                 Screen.currentResolution.height);
 
-        PauseMenu = GameObject.Find("PauseCanvas");
         PauseMenu.SetActive(false);
+        EndMenu.SetActive(false);
         Time.timeScale = 1f;
     }
 
@@ -56,5 +80,19 @@ public class GameController : MonoBehaviour
     void PauseIsCliked()
     {
         pauseClicked = false;
+    }
+
+    public void EndGame()
+    {
+        EndMenu.SetActive(true);
+        Pause = true;
+        Time.timeScale = 0f;
+        Text txt = GameObject.Find("StatsText").GetComponent<Text>();
+        txt.text = $"Пройдено этажей: {FloorsCompleted - 1}\n"+
+                   $"Зачищено комнат: {RoomsCleared}\n"+
+                   $"Убито врагов: {EnemiesKilled}\n"+
+                   $"Собрано бонусов: {BonusesCollected}\n"+                 
+                   $"Время: {TimeSpan.FromSeconds(Timer).ToString(@"mm\:ss")}\n"+
+                   $"Итоговый счет: {Score}\n";
     }
 }

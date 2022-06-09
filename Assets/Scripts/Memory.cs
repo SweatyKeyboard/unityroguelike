@@ -22,11 +22,24 @@ public class MemoryItem
 public class MemoryInteractive
 {
     public Common.InteractiveType type;
-    public bool condition;
+    public bool boolean;
+    public int integer;
+    public string str;
 
     public MemoryInteractive(Common.InteractiveType t, bool b)
     {
         type = t;
-        condition = b;
+        boolean = b;
+    }
+    public MemoryInteractive(Common.InteractiveType t, int i)
+    {
+        type = t;
+        integer = i;
+    }
+
+    public MemoryInteractive(Common.InteractiveType t, string s)
+    {
+        type = t;
+        str = s;
     }
 }

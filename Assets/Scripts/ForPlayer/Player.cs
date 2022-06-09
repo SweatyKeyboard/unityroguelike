@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
         player = GetComponent<Rigidbody2D>();
         lastFire = Time.time;
 
-        Speed *= 7;
+        Speed *= 25;
         BulletSpeed *= 8;
         RateOfFire = 1 / RateOfFire;
         Range /= 1.75f;
@@ -42,11 +42,11 @@ public class Player : MonoBehaviour
             float shootHorizontal = Input.GetAxisRaw("HorizontalShooting"),
                   shootVertical = Input.GetAxisRaw("VerticalShooting");
 
-            float moveHorizontal = Input.GetAxisRaw("HorizontalMoving"),
-                   moveVertical = Input.GetAxisRaw("VerticalMoving");
+            
 
-            moveInput = new Vector2(moveHorizontal, moveVertical);
-            moveVelocity = Speed * moveInput.normalized;
+            /*moveInput = new Vector2(moveHorizontal, moveVertical);
+            moveVelocity = Speed * moveInput.normalized;*/
+            
 
             if (shootHorizontal != 0 || shootVertical != 0)
                 rotation = Mathf.Atan2(-shootHorizontal, shootVertical) * Mathf.Rad2Deg;
@@ -63,8 +63,16 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        player.MovePosition(player.position + moveVelocity * Time.fixedDeltaTime);
+        Move();
         player.transform.rotation = Quaternion.Euler(new Vector3(0,0,rotation));
+    }
+
+    void Move()
+    {
+        float moveHorizontal = Input.GetAxisRaw("HorizontalMoving"),
+                   moveVertical = Input.GetAxisRaw("VerticalMoving");
+        Vector3 movement = new Vector3(moveHorizontal, moveVertical, 0f);
+        player.AddForce(movement * Speed);
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -123,9 +131,10 @@ public class Player : MonoBehaviour
 
             if (Health[0] == 0)
             {
-                SceneManager.LoadScene("MainMenu");
+                FindObjectOfType<GameController>().EndGame();
             }
 
+            FindObjectOfType<GameController>().Score -= 10;
             player.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
             invulnerable = true;
             FindObjectOfType<HudController>().UpdateHP();

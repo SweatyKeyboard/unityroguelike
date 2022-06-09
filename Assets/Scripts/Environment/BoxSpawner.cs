@@ -24,9 +24,10 @@ public class BoxSpawner : MonoBehaviour
     public void Activate()
     {
         Chance /= 2 * (FindObjectsOfType<MysteryBox>().Length + 0.5f);
+        Quaternion angle = Quaternion.Euler(0, 0, Random.Range(0f,360f));
 
         if (Random.Range(0f, 100f) < Chance)
-            Instantiate(Box, transform.position, transform.rotation);
+            Instantiate(Box, transform.position, angle);
         Destroy(gameObject);
     }
 

@@ -74,38 +74,46 @@ public class HudController : MonoBehaviour
         foreach (GameObject mapTile in GameObject.FindGameObjectsWithTag("MapTile"))
             Destroy(mapTile);
 
+        int lvlSize = FindObjectOfType<LevelController>().levelSize;
         GameObject mmap = GameObject.Find("MiniMap");
-        for (int x = 0; x < 5; x++)
-            for (int y = 0; y < 5; y++)
+        for (int x = 0; x < lvlSize; x++)
+            for (int y = 0; y < lvlSize; y++)
             {
                 if (rooms[x, y] != 0)
                 {
-                    Vector3 pos = new Vector3(
-                        mmap.transform.position.x - 0.38f * (x - 2),
-                        mmap.transform.position.y - 0.38f * (y - 2),
-                        0);
+                    float sizeMod = 1.5f / lvlSize;
+                    float bias = 1.9f / lvlSize;
 
-                    GameObject Tile = Resources.Load<GameObject>("MapTile");
+                    GameObject tile = Resources.Load<GameObject>("MapTile");
                     if (visited[x, y])
                     {
                         if (x == playerPos.x && y == playerPos.y)
-                            Tile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.8f);
+                            tile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.8f);
                         else
-                            Tile.GetComponent<SpriteRenderer>().color = new Color(0.55f, 0.55f, 0.55f, 0.8f);
+                            tile.GetComponent<SpriteRenderer>().color = new Color(0.55f, 0.55f, 0.55f, 0.8f);
 
                     }
                     else
                     {
                         if (x == bossPos.x && y == bossPos.y)
-                            Tile.GetComponent<SpriteRenderer>().color = new Color(0.4f, 0.2f, 0.2f, 0.8f);
+                            tile.GetComponent<SpriteRenderer>().color = new Color(0.4f, 0.2f, 0.2f, 0.8f);
                         else
-                            Tile.GetComponent<SpriteRenderer>().color = new Color(0.3f, 0.3f, 0.3f, 0.8f);
+                            tile.GetComponent<SpriteRenderer>().color = new Color(0.3f, 0.3f, 0.3f, 0.8f);
                     }
 
+                    tile.transform.localScale = new Vector3(
+                        sizeMod, sizeMod, 0
+                        );
 
-                    Instantiate(Tile, pos, mmap.transform.rotation);
+                    Vector3 position = new Vector3(
+                        mmap.transform.position.x - bias * (x - lvlSize/2),
+                        mmap.transform.position.y - bias * (y - lvlSize/2),
+                        0);
 
-                    
+
+                    Instantiate(tile, position, mmap.transform.rotation);
+
+
 
                 }
             }

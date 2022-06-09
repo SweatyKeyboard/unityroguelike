@@ -1,51 +1,85 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class LevelController : MonoBehaviour
 {
+    public int levelSize;
+    public int center;
 
-    bool[,] roomVisited = new bool[5, 5];
-    int[,] roomPrototypes = new int[5, 5];
+    int thisLevelType = 0;
+    bool[,] roomVisited;
+    int[,] roomPrototypes;
     Common.Coords playerPos = new Common.Coords(2, 2);
     Common.Coords bossPos;
 
     bool thereAreEnemies = false;
     Entrance[] entrances = new Entrance[4];
     int lastDoor = 0;
-    List<MemoryItem>[,] roomItems = new List<MemoryItem>[5, 5];
-    List<MemoryInteractive>[,] roomInteractives = new List<MemoryInteractive>[5, 5];
+    List<MemoryItem>[,] roomItems;
+    List<MemoryInteractive>[,] roomInteractives;
     bool bossDefeated = false;
 
     void Start()
     {
-        NewLevel(); 
+        NewLevelPart1();
     }
 
-    void NewLevel()
+    public void NewLevelPart1()
     {
-        for (int a = 0; a < 5; a++)
-            for (int b = 0; b < 5; b++)
-            {
-                roomItems[a, b] = new List<MemoryItem>();
-                roomInteractives[a, b] = new List<MemoryInteractive>();
-            }
+        levelSize++;
+        center = levelSize / 2;
+        bossDefeated = false;
+        thisLevelType = UnityEngine.Random.Range(0, 1);
+        FindObjectOfType<GameController>().FloorsCompleted++;
 
-        roomPrototypes[2, 2] = -1;
+        Image overlay = GameObject.FindGameObjectWithTag("Overlay").GetComponent<Image>();
+
+        StartCoroutine(
+            SmoothColor(overlay,
+            new Color(0, 0, 0, overlay.color.a),
+            new Color(0, 0, 0, 1),
+            0.5f));
+        Invoke("NewLevelPart2", 0.5f);
+
+    }
+
+    void NewLevelPart2()
+    {
+        foreach (GameObject room in GameObject.FindGameObjectsWithTag("Room"))
+            Destroy(room);        
+        foreach (GameObject p in GameObject.FindGameObjectsWithTag("Particles"))
+            Destroy(p);
+        foreach (GameObject p in GameObject.FindGameObjectsWithTag("EnemyTrail"))
+            Destroy(p);
+        foreach (GameObject p in GameObject.FindGameObjectsWithTag("PlayerTrail"))
+            Destroy(p);
+
+        playerPos = new Common.Coords(center, center);
+        
         GenerateRooms();
-        roomVisited[2, 2] = true;
-
+        roomVisited[center, center] = true;
         Entrance[] tempEntrances = FindObjectsOfType<Entrance>();
         for (int c = 0; c < 4; c++)
             entrances[c] = tempEntrances[c];
 
-        
+
 
         Instantiate(Resources.Load<GameObject>("Rooms/Room" + roomPrototypes[playerPos.x, playerPos.y]), transform.position, transform.rotation);
         ActivateDoors();
 
-        FindObjectOfType<HudController>().DrawMiniMap(roomPrototypes, roomVisited, playerPos, bossPos);      
+        FindObjectOfType<HudController>().DrawMiniMap(roomPrototypes, roomVisited, playerPos, bossPos);
+
+
+        StartCoroutine(
+           SmoothColor(GameObject.FindGameObjectWithTag("Overlay").GetComponent<Image>(),
+           new Color(0, 0, 0, 1),
+           new Color(0, 0, 0, 0),
+           0.5f));
+
     }
 
     public void AreEnemiesDead()
@@ -58,9 +92,9 @@ public class LevelController : MonoBehaviour
         if (!thereAreEnemies)
         {
             Vector3 pos = new Vector3(
-                transform.position.x + Random.Range(-1f, 1f),
-                transform.position.y + Random.Range(-1f, 1f));
-            Quaternion rot = Quaternion.Euler(0, 0, Random.Range(0, 360));
+                transform.position.x + UnityEngine.Random.Range(-1f, 1f),
+                transform.position.y + UnityEngine.Random.Range(-1f, 1f));
+            Quaternion rot = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 360));
 
             Instantiate(Resources.Load<GameObject>("Items/Item0"), pos, rot);
             ActivateDoors();
@@ -69,6 +103,8 @@ public class LevelController : MonoBehaviour
                 FindObjectOfType<Downfloor>().Open();
                 bossDefeated = true;
             }
+
+            FindObjectOfType<GameController>().RoomsCleared++;
         }
     }
 
@@ -109,6 +145,11 @@ public class LevelController : MonoBehaviour
                     new MemoryInteractive(
                     Common.InteractiveType.Stove,
                     p.GetComponent<Stove>().TurnedOn));
+            else if (p.GetComponent<Interactive>().Type == Common.InteractiveType.Cutlery)
+                roomInteractives[playerPos.x, playerPos.y].Add(
+                    new MemoryInteractive(
+                    Common.InteractiveType.Cutlery,
+                    p.GetComponent<SpriteRenderer>().sprite.name));
         }
 
         StartCoroutine(
@@ -134,6 +175,8 @@ public class LevelController : MonoBehaviour
             Destroy(p);
         foreach (GameObject p in GameObject.FindGameObjectsWithTag("EnemyTrail"))
             Destroy(p);
+        foreach (GameObject p in GameObject.FindGameObjectsWithTag("PlayerTrail"))
+            Destroy(p);
 
         StartCoroutine(
             SmoothColor(GameObject.FindGameObjectWithTag("Overlay").GetComponent<Image>(),
@@ -151,26 +194,36 @@ public class LevelController : MonoBehaviour
         }
 
         int stoveCounter = 0;
+        int cutleryCounter = 0;
         foreach (MemoryInteractive g in roomInteractives[playerPos.x, playerPos.y])
         {
             if (g.type == Common.InteractiveType.Stove)
             {
-                FindObjectsOfType<Stove>()[stoveCounter++].TurnedOn = g.condition;
+                FindObjectsOfType<Stove>()[stoveCounter++].TurnedOn = g.boolean;
             }
-
-
+            else
+            {
+                if (g.type == Common.InteractiveType.Cutlery)
+                {
+                    if(roomVisited[playerPos.x, playerPos.y])
+                        FindObjectsOfType<CutlerySpawner>()[cutleryCounter++].ActivateOld(g.integer);
+                }
+            }
         }
 
         if (!roomVisited[playerPos.x, playerPos.y])
         {
             for (int s = 0; s < FindObjectsOfType<EnemySpawn>().Length; s++)
-            {
                 FindObjectsOfType<EnemySpawn>()[s].Activate();
-            }
+
             for (int s = 0; s < FindObjectsOfType<BoxSpawner>().Length; s++)
-            {
                 FindObjectsOfType<BoxSpawner>()[s].Activate();
-            }
+
+            for (int s = 0; s < FindObjectsOfType<CutlerySpawner>().Length; s++)
+                FindObjectsOfType<CutlerySpawner>()[s].Activate();
+
+            FindObjectOfType<GameController>().Score =
+                (int)(FindObjectOfType<GameController>().Score * 1.05);
         }
         else
         {
@@ -210,7 +263,7 @@ public class LevelController : MonoBehaviour
             else
                 entrances[0].Deactivate();
 
-            if (playerPos.x < 4 && roomPrototypes[playerPos.x + 1, playerPos.y] != 0)
+            if (playerPos.x < levelSize - 1 && roomPrototypes[playerPos.x + 1, playerPos.y] != 0)
                 entrances[3].Activate();
             else
                 entrances[3].Deactivate();
@@ -220,7 +273,7 @@ public class LevelController : MonoBehaviour
             else
                 entrances[2].Deactivate();
 
-            if (playerPos.y < 4 && roomPrototypes[playerPos.x, playerPos.y + 1] != 0)
+            if (playerPos.y < levelSize - 1 && roomPrototypes[playerPos.x, playerPos.y + 1] != 0)
                 entrances[1].Activate();
             else
                 entrances[1].Deactivate();
@@ -229,55 +282,143 @@ public class LevelController : MonoBehaviour
 
     void GenerateRooms()
     {
-        int maxRooms = (5 - 1) * (5 - 1) - Random.Range(0, 5 + 1);
+        int maxRooms = (levelSize) * (levelSize) - UnityEngine.Random.Range(0, levelSize);
         int roomCount = 1;
 
-        while (roomCount < maxRooms)
+        do
         {
-            List<Common.Coords> possible = new List<Common.Coords>();
-
-            for (int x = 0; x < 5; x++)
-                for (int y = 0; y < 5; y++)
+            roomVisited = new bool[levelSize, levelSize];
+            roomPrototypes = new int[levelSize, levelSize];
+            roomItems = new List<MemoryItem>[levelSize, levelSize];
+            roomInteractives = new List<MemoryInteractive>[levelSize, levelSize];
+            for (int a = 0; a < levelSize; a++)
+                for (int b = 0; b < levelSize; b++)
                 {
-                    if (roomPrototypes[x, y] != 0)
-                    {
-                        if (x != 0 && roomPrototypes[x - 1, y] == 0)
-                            possible.Add(new Common.Coords(x - 1, y));
-                        if (x != 4 && roomPrototypes[x + 1, y] == 0)
-                            possible.Add(new Common.Coords(x + 1, y));
-                        if (y != 0 && roomPrototypes[x, y - 1] == 0)
-                            possible.Add(new Common.Coords(x, y - 1));
-                        if (y != 4 && roomPrototypes[x, y + 1] == 0)
-                            possible.Add(new Common.Coords(x, y + 1));
-                    }
+                    roomItems[a, b] = new List<MemoryItem>();
+                    roomInteractives[a, b] = new List<MemoryInteractive>();
+                    roomVisited[a, b] = false;
+                    if (a == 2 && b == 2)
+                        roomPrototypes[a, b] = -1;
+                    else
+                        roomPrototypes[a, b] = 0;
                 }
+            roomPrototypes[center, center] = -1;
 
-            for (int c = 0; c < 2; c++)
+            while (roomCount < maxRooms)
             {
-                Common.Coords randomizedPossible = possible[Random.Range(0, possible.Count)];
+                List<Common.Coords> possible = new List<Common.Coords>();
 
-                if (roomCount < maxRooms - 1)
-                    roomPrototypes[randomizedPossible.x, randomizedPossible.y] =
-                    Random.Range(1, 4);
-                else if (roomCount == maxRooms - 1)
+                for (int x = 0; x < levelSize; x++)
+                    for (int y = 0; y < levelSize; y++)
+                    {
+                        if (roomPrototypes[x, y] != 0)
+                        {
+                            int thisNeighbors = 0;
+                            for (int xxx = -1; xxx <= 1; xxx++)
+                                for (int yyy = -1; yyy <= 1; yyy++)
+                                {
+                                    try
+                                    {
+                                        if (roomPrototypes[x + xxx, y + yyy] != 0)
+                                            thisNeighbors++;
+                                    }
+                                    catch { }
+                                }
+                            if (thisNeighbors <= 3)
+                            {
+                                for (int xx = -1; xx <= 1; xx++)
+                                    for (int yy = -1; yy <= 1; yy++)
+                                    {
+
+                                        if (Math.Abs(xx) != Math.Abs(yy))
+                                        {
+                                            try
+                                            {
+
+                                                if (roomPrototypes[x + xx, y + yy] == 0)
+                                                {
+                                                    int neighbors = 0;
+                                                    for (int xxx = -1; xxx <= 1; xxx++)
+                                                        for (int yyy = -1; yyy <= 1; yyy++)
+                                                        {
+                                                            try
+                                                            {
+                                                                if (roomPrototypes[x + xx + xxx, y + yy + yyy] != 0)
+                                                                    neighbors++;
+                                                            }
+                                                            catch { }
+                                                        }
+                                                    if (neighbors <= 3)
+                                                    {
+                                                        possible.Add(new Common.Coords(x + xx, y + yy));
+                                                    }
+
+                                                }
+
+                                            }
+
+                                            catch { }
+                                        }
+
+                                        /*if (x != 0 && roomPrototypes[x - 1, y] == 0)
+                                            possible.Add(new Common.Coords(x - 1, y));
+                                        if (x != 4 && roomPrototypes[x + 1, y] == 0)
+                                            possible.Add(new Common.Coords(x + 1, y));
+                                        if (y != 0 && roomPrototypes[x, y - 1] == 0)
+                                            possible.Add(new Common.Coords(x, y - 1));
+                                        if (y != 4 && roomPrototypes[x, y + 1] == 0)
+                                            possible.Add(new Common.Coords(x, y + 1));*/
+                                    }
+                            }
+                        }
+
+                    }
+                if (possible.Count > 0)
                 {
-                    roomPrototypes[randomizedPossible.x, randomizedPossible.y] = -2;
-                    bossPos.x = randomizedPossible.x;
-                    bossPos.y = randomizedPossible.y;
+                    Common.Coords randomizedPossible = possible[UnityEngine.Random.Range(0, possible.Count)];
+
+                    if (roomCount < maxRooms - 1)
+                        roomPrototypes[randomizedPossible.x, randomizedPossible.y] =
+                        thisLevelType * 10 + UnityEngine.Random.Range(1, 4);
+                    roomCount++;
                 }
                 else
                     break;
-
-                roomCount++;
-
             }
+
+            Common.Coords farthestRoom = new Common.Coords(center, center);
+            float dist = 0;
+
+            for (int i = 0; i < levelSize; i++)
+                for (int j = 0; j < levelSize; j++)
+                {
+                    if (roomPrototypes[i, j] != 0)
+                    {
+                        float tmpDist = (float)Math.Sqrt(Math.Pow(Math.Abs(i - center), 2) + Math.Pow(Math.Abs(j - center), 2));
+                        if (tmpDist > dist)
+                        {
+                            farthestRoom = new Common.Coords(i, j);
+                            dist = tmpDist;
+                        }
+                        else if (tmpDist == dist)
+                        {
+                            if (UnityEngine.Random.Range(0, 2) == 1)
+                                farthestRoom = new Common.Coords(i, j);
+                        }
+                    }
+                }
+
+            roomPrototypes[farthestRoom.x, farthestRoom.y] = -2;
+            bossPos.x = farthestRoom.x;
+            bossPos.y = farthestRoom.y;
+
+        } while (roomCount <= 6);
+        }
+        // Update is called once per frame
+        void Update()
+        {
+
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-}
 
