@@ -6,8 +6,8 @@ public class BoxSpawner : MonoBehaviour
 {
 
     public float Chance;
-    public GameObject Box;
-
+    public List<GameObject> Box;
+    public bool LessChance = true;
 
     // Start is called before the first frame update
     void Start()
@@ -23,11 +23,15 @@ public class BoxSpawner : MonoBehaviour
 
     public void Activate()
     {
-        Chance /= 2 * (FindObjectsOfType<MysteryBox>().Length + 0.5f);
+        if (LessChance)
+            Chance /= 1.5f * (FindObjectsOfType<MysteryBox>().Length + 0.25f);
+
         Quaternion angle = Quaternion.Euler(0, 0, Random.Range(0f,360f));
 
+        int type = Random.Range(0, 2);
+
         if (Random.Range(0f, 100f) < Chance)
-            Instantiate(Box, transform.position, angle);
+            Instantiate(Box[type], transform.position, angle);
         Destroy(gameObject);
     }
 

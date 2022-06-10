@@ -33,7 +33,10 @@ public class Entrance : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (Active && collision.CompareTag("Player") && Input.GetKey(KeyCode.Space))
+        ButtonClick b = FindObjectOfType<ButtonClick>();
+        if (Active && collision.CompareTag("Player") &&
+            ((Application.isMobilePlatform && b.IsCliked && b.Key == KeyCode.Space) ||
+            (!Application.isMobilePlatform) && Input.GetKey(KeyCode.Space)))
         {
             Deactivate();
             FindObjectOfType<LevelController>().WalkToPart1(XMod, YMod, Id);

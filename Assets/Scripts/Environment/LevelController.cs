@@ -149,7 +149,9 @@ public class LevelController : MonoBehaviour
                 roomInteractives[playerPos.x, playerPos.y].Add(
                     new MemoryInteractive(
                     Common.InteractiveType.Cutlery,
+                    p.GetComponent<Interactive>().Index,
                     p.GetComponent<SpriteRenderer>().sprite.name));
+           
         }
 
         StartCoroutine(
@@ -193,6 +195,7 @@ public class LevelController : MonoBehaviour
         Instantiate(Resources.Load<GameObject>("Rooms/Room" + roomPrototypes[playerPos.x, playerPos.y]), transform.position, transform.rotation);
         foreach (MemoryItem g in roomItems[playerPos.x, playerPos.y])
         {
+            Debug.Log(g.itemId);
             Instantiate(
                 Resources.Load<GameObject>("Items/Item" + g.itemId),
                 g.position,
@@ -200,7 +203,6 @@ public class LevelController : MonoBehaviour
         }
 
         int stoveCounter = 0;
-        int cutleryCounter = 0;
         foreach (MemoryInteractive g in roomInteractives[playerPos.x, playerPos.y])
         {
             if (g.type == Common.InteractiveType.Stove)
@@ -211,8 +213,12 @@ public class LevelController : MonoBehaviour
             {
                 if (g.type == Common.InteractiveType.Cutlery)
                 {
-                    if(roomVisited[playerPos.x, playerPos.y])
-                        FindObjectsOfType<CutlerySpawner>()[cutleryCounter++].ActivateOld(g.integer);
+                    if (roomVisited[playerPos.x, playerPos.y])
+                    {
+                        Debug.Log($"Loading - {g.integer}, {g.str}");
+                        FindObjectsOfType<CutlerySpawner>().Where(x => x.IndexInRoom == g.integer).ToArray()[0].
+                            ActivateOld(g.str);
+                    }
                 }
             }
         }
@@ -227,6 +233,9 @@ public class LevelController : MonoBehaviour
 
             for (int s = 0; s < FindObjectsOfType<CutlerySpawner>().Length; s++)
                 FindObjectsOfType<CutlerySpawner>()[s].Activate();
+
+            for (int s = 0; s < FindObjectsOfType<ShopItemSpawner>().Length; s++)
+                FindObjectsOfType<ShopItemSpawner>()[s].Activate();
 
             FindObjectOfType<GameController>().Score =
                 (int)(FindObjectOfType<GameController>().Score * 1.05);
@@ -289,10 +298,13 @@ public class LevelController : MonoBehaviour
     void GenerateRooms()
     {
         int maxRooms = (levelSize) * (levelSize) - UnityEngine.Random.Range(0, levelSize);
+        int minRooms = levelSize * 2;
         int roomCount = 1;
 
         do
         {
+            roomCount = 1;
+            int bonusRooms = 0;
             roomVisited = new bool[levelSize, levelSize];
             roomPrototypes = new int[levelSize, levelSize];
             roomItems = new List<MemoryItem>[levelSize, levelSize];
@@ -354,7 +366,7 @@ public class LevelController : MonoBehaviour
                                                             }
                                                             catch { }
                                                         }
-                                                    if (neighbors <= 3)
+                                                    if (neighbors <= 5)
                                                     {
                                                         possible.Add(new Common.Coords(x + xx, y + yy));
                                                     }
@@ -387,10 +399,22 @@ public class LevelController : MonoBehaviour
                         roomPrototypes[randomizedPossible.x, randomizedPossible.y] =
                         thisLevelType * 10 + UnityEngine.Random.Range(1, 4);
                     roomCount++;
+
+                    if (UnityEngine.Random.Range(0f,100f) < 10f / Math.Pow(2, bonusRooms))
+                    {
+                        roomPrototypes[randomizedPossible.x, randomizedPossible.y] =
+                        (thisLevelType+1) * 100 + UnityEngine.Random.Range(1,1);
+                        bonusRooms++;
+                    }
+
+
                 }
                 else
                     break;
             }
+
+
+            
 
             Common.Coords farthestRoom = new Common.Coords(center, center);
             float dist = 0;
@@ -418,7 +442,20 @@ public class LevelController : MonoBehaviour
             bossPos.x = farthestRoom.x;
             bossPos.y = farthestRoom.y;
 
-        } while (roomCount <= 6);
+            do
+            {
+                Common.Coords shopCoords = new Common.Coords(
+                    UnityEngine.Random.Range(0, levelSize),
+                    UnityEngine.Random.Range(0, levelSize));
+                if (roomPrototypes[shopCoords.x, shopCoords.y] > 0)
+                {
+                    roomPrototypes[shopCoords.x, shopCoords.y] = 102;
+                    break;
+                }
+
+            } while (true);
+
+        } while (roomCount <= minRooms);
         }
         // Update is called once per frame
         void Update()

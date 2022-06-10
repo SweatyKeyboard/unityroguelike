@@ -15,14 +15,7 @@ public class Downfloor : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {    if (Input.GetKey(KeyCode.Space) && !stopWatchingButton)
-        {
-            stopWatchingButton = true;
-            FindObjectOfType<LevelController>().NewLevelPart1();
-            FindObjectOfType<GameController>().Score =
-                (int)(FindObjectOfType<GameController>().Score * 1.2) +
-                300 * FindObjectOfType<GameController>().currentLevel;
-        }
+    {    
     }
 
     public void Open()
@@ -37,5 +30,20 @@ public class Downfloor : MonoBehaviour
         g.transform.position = transform.position;
 
         GetComponent<Collider2D>().enabled = true;
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        ButtonClick b = FindObjectOfType<ButtonClick>();
+        if (!stopWatchingButton && collision.CompareTag("Player") &&
+            ((Application.isMobilePlatform && b.IsCliked && b.Key == KeyCode.Space) ||
+            (!Application.isMobilePlatform) && Input.GetKey(KeyCode.Space)))
+        {
+            stopWatchingButton = true;
+            FindObjectOfType<LevelController>().NewLevelPart1();
+            FindObjectOfType<GameController>().Score =
+                (int)(FindObjectOfType<GameController>().Score * 1.2) +
+                300 * FindObjectOfType<GameController>().currentLevel;
+        }
     }
 }

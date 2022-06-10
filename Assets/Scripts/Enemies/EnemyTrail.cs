@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyTrail : MonoBehaviour
 {
+    public string TrailName;
     public float Length;
 
     // Start is called before the first frame update
@@ -29,7 +30,7 @@ public class EnemyTrail : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            FindObjectOfType<Player>().Hurt();
+            FindObjectOfType<Player>().Hurt(TrailName);
         }
     }
 }

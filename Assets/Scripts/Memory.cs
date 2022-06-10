@@ -42,4 +42,11 @@ public class MemoryInteractive
         type = t;
         str = s;
     }
+
+    public MemoryInteractive(Common.InteractiveType t, int i, string s)
+    {
+        type = t;
+        str = s;
+        integer = i;
+    }
 }

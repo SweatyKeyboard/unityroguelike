@@ -18,107 +18,116 @@ public class Pickup : MonoBehaviour
         
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            GameController game = FindObjectOfType<GameController>();
-            Player player = FindObjectOfType<Player>();
-            string message = "";
-            int cost = 0;
-
-            switch (Type)
+            if (GetComponent<ShopItem>().IsForSale && GetComponent<ShopItem>().Bought
+                || !GetComponent<ShopItem>().IsForSale)
             {
-                case Common.ItemType.HealthK:
-                    {
-                        FindObjectOfType<Player>().AddHP(Common.HealthType.Ketchup);
-                        FindObjectOfType<HudController>().UpdateHP();
-                        cost = 10;
-                    } break;
+                GameController game = FindObjectOfType<GameController>();
+                Player player = FindObjectOfType<Player>();
+                string message = "";
+                int cost = 0;
 
-                case Common.ItemType.HealthMy:
-                    {
-                        FindObjectOfType<Player>().AddHP(Common.HealthType.Mayo);
-                        FindObjectOfType<HudController>().UpdateHP();
-                        cost = 12;
-                    }
-                    break;
+                switch (Type)
+                {
+                    case Common.ItemType.HealthK:
+                        {
+                            FindObjectOfType<Player>().AddHP(Common.HealthType.Ketchup);
+                            FindObjectOfType<HudController>().UpdateHP();
+                            cost = 10;
+                        }
+                        break;
 
-                case Common.ItemType.HealthMs:
-                    {
-                        FindObjectOfType<Player>().AddHP(Common.HealthType.Mustard);
-                        FindObjectOfType<HudController>().UpdateHP();
-                        cost = 15;
-                    }
-                    break;
+                    case Common.ItemType.HealthMy:
+                        {
+                            FindObjectOfType<Player>().AddHP(Common.HealthType.Mayo);
+                            FindObjectOfType<HudController>().UpdateHP();
+                            cost = 12;
+                        }
+                        break;
 
-                case Common.ItemType.Salt:
-                    {
-                        int rand = Random.Range(1, 4);
-                        game.Salt += rand;
-                        GameObject.Find("SaltCounter").GetComponent<Text>().text = game.Salt.ToString();
-                        cost = rand;
-                    }
-                    break;
+                    case Common.ItemType.HealthMs:
+                        {
+                            FindObjectOfType<Player>().AddHP(Common.HealthType.Mustard);
+                            FindObjectOfType<HudController>().UpdateHP();
+                            cost = 15;
+                        }
+                        break;
 
-                case Common.ItemType.Pepper:
-                    {
-                        int rand = Random.Range(1, 4);
-                        cost = rand * 3;
-                    }
-                    break;
+                    case Common.ItemType.Salt:
+                        {
+                            int rand = Random.Range(1, 4);
+                            GameController.Salt += rand;
+                            GameObject.Find("SaltCounter").GetComponent<Text>().text = GameController.Salt.ToString();
+                            cost = rand;
+                        }
+                        break;
 
-                case Common.ItemType.Cucumber:
-                    {
-                        player.Damage += 0.25f;
-                        message = "Урон повышен";
-                        cost = 25;
-                    } break;
+                    case Common.ItemType.Pepper:
+                        {
+                            int rand = Random.Range(1, 4);
+                            cost = rand * 3;
+                        }
+                        break;
 
-                case Common.ItemType.Tomato:
-                    {
-                        player.Range += 0.05f;
-                        message = "Дальность стрельбы повышена";
-                        cost = 25;
-                    }
-                    break;
+                    case Common.ItemType.Cucumber:
+                        {
+                            player.Damage += 0.25f;                            
+                            message = "Урон повышен";
+                            cost = 25;
+                        }
+                        break;
 
-                case Common.ItemType.Cheese:
-                    {
-                        player.RateOfFire -= 0.1f;
-                        message = "Скорость стрельбы повышена";
-                        cost = 25;
-                    }
-                    break;
+                    case Common.ItemType.Tomato:
+                        {
+                            player.Range += 0.05f;
+                            message = "Дальность стрельбы повышена";
+                            cost = 25;
+                        }
+                        break;
 
-                case Common.ItemType.Salad:
-                    {
-                        player.Speed += 2f;
-                        message = "Скорость повышена";
-                        cost = 25;
-                    } break;
+                    case Common.ItemType.Cheese:
+                        {
+                            player.RateOfFire -= 0.1f;
+                            message = "Скорость стрельбы повышена";
+                            cost = 25;
+                        }
+                        break;
 
-                case Common.ItemType.Bacon:
-                    {
-                        player.BulletSpeed += 0.08f;
-                        message = "Скорость пуль повышена";
-                        cost = 25;
-                    } break;
+                    case Common.ItemType.Salad:
+                        {
+                            player.Speed += 2f;
+                            message = "Скорость повышена";
+                            cost = 25;
+                        }
+                        break;
 
-                case Common.ItemType.Burger:
-                    {
-                        player.MaxHealth += 2;
-                        message = "Максимальное здоровье повышено";
-                        FindObjectOfType<HPPos>().GetUpdates();
-                        cost = 40;
-                    }
-                    break;
+                    case Common.ItemType.Bacon:
+                        {
+                            player.BulletSpeed += 0.08f;
+                            message = "Скорость пуль повышена";
+                            cost = 25;
+                        }
+                        break;
+
+                    case Common.ItemType.Burger:
+                        {
+                            player.MaxHealth += 2;
+                            message = "Максимальное здоровье повышено";
+                            FindObjectOfType<HPPos>().GetUpdates();
+                            cost = 40;
+                        }
+                        break;
+                }
+                if (message != "")
+                    FindObjectOfType<InfoText>().ShowText(message, 2f);
+                FindObjectOfType<GameController>().Score -= cost;
+                FindObjectOfType<GameController>().BonusesCollected++;
+
+                Destroy(gameObject);
             }
-            FindObjectOfType<InfoText>().ShowText(message, 2f);
-            FindObjectOfType<GameController>().Score -= cost;
-            FindObjectOfType<GameController>().BonusesCollected++;
-
-            Destroy(gameObject);
         }
     }
 }

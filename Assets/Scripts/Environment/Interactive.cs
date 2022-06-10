@@ -6,6 +6,7 @@ public class Interactive : MonoBehaviour
 {
 
     public Common.InteractiveType Type;
+    public int Index;
     // Start is called before the first frame update
     void Start()
     {

@@ -18,7 +18,10 @@ public class StoveSwitcher : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player") && Input.GetKey(KeyCode.Space) && readyToClick)
+        ButtonClick b = FindObjectOfType<ButtonClick>();
+        if (collision.CompareTag("Player") && readyToClick &&
+            ((Application.isMobilePlatform && b.IsCliked && b.Key == KeyCode.Space) ||
+            (!Application.isMobilePlatform) && Input.GetKey(KeyCode.Space)))
         {
             LinkedStove.GetComponent<Stove>().Change();
             readyToClick = false;

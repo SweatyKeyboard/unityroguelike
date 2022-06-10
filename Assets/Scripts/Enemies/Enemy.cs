@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public string EnemyName;
     public float Speed;
     public float Health;
     public int Cost;
@@ -74,6 +75,10 @@ public class Enemy : MonoBehaviour
         {
             Destroy(col.gameObject);
             Hurt(target.Damage, 0.1f);
+        }
+        else if (col.gameObject.CompareTag("Player"))
+        {
+            target.Hurt(EnemyName);
         }
     }
 

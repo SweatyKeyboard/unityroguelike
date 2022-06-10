@@ -15,6 +15,8 @@ public class Player : MonoBehaviour
     public GameObject ParticlesPrefab;
     public int MaxHealth;
     public int[] Health;
+    public FixedJoystick MovingJoystick;
+    public FixedJoystick ShootingJoystick;
 
 
     Rigidbody2D player;
@@ -23,9 +25,13 @@ public class Player : MonoBehaviour
     float rotation;
     float lastRotation;
     bool invulnerable = false;
+    bool mobile = false;
 
     void Start()
     {
+        if (Application.isMobilePlatform)
+            mobile = true;
+
         player = GetComponent<Rigidbody2D>();
         lastFire = Time.time;
 
@@ -39,14 +45,18 @@ public class Player : MonoBehaviour
     {
         if (!FindObjectOfType<GameController>().Pause)
         {
-            float shootHorizontal = Input.GetAxisRaw("HorizontalShooting"),
-                  shootVertical = Input.GetAxisRaw("VerticalShooting");
+            float shootHorizontal, shootVertical;
+            if (!mobile)
+            {
+                shootHorizontal = Input.GetAxisRaw("HorizontalShooting");
+                shootVertical = Input.GetAxisRaw("VerticalShooting");
+            }
+            else
+            {
+                shootHorizontal = ShootingJoystick.Horizontal;
+                shootVertical = ShootingJoystick.Vertical;
+            }
 
-            
-
-            /*moveInput = new Vector2(moveHorizontal, moveVertical);
-            moveVelocity = Speed * moveInput.normalized;*/
-            
 
             if (shootHorizontal != 0 || shootVertical != 0)
                 rotation = Mathf.Atan2(-shootHorizontal, shootVertical) * Mathf.Rad2Deg;
@@ -69,19 +79,28 @@ public class Player : MonoBehaviour
 
     void Move()
     {
-        float moveHorizontal = Input.GetAxisRaw("HorizontalMoving"),
-                   moveVertical = Input.GetAxisRaw("VerticalMoving");
+        float moveHorizontal, moveVertical;
+        if (!mobile)
+        {
+            moveHorizontal = Input.GetAxisRaw("HorizontalMoving");
+            moveVertical = Input.GetAxisRaw("VerticalMoving");
+        }
+        else
+        {
+            moveHorizontal = MovingJoystick.Horizontal;
+            moveVertical = MovingJoystick.Vertical;
+        }
         Vector3 movement = new Vector3(moveHorizontal, moveVertical, 0f);
         player.AddForce(movement * Speed);
     }
 
-    void OnCollisionEnter2D(Collision2D col)
+   /* void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.CompareTag("Enemy"))
         {
             Hurt();
         }
-    }
+    }*/
 
     void Shoot(float x, float y) 
     {
@@ -106,7 +125,7 @@ public class Player : MonoBehaviour
         invulnerable = false;
     }
 
-    public void Hurt()
+    public void Hurt(string who)
     {
         if (!invulnerable)
         {
@@ -146,16 +165,19 @@ public class Player : MonoBehaviour
 
     public void AddHP(Common.HealthType type)
     {
-        if (type == Common.HealthType.Ketchup)
+        if (Health.Sum() < 20)
         {
-            if (Health[0] + 2 < MaxHealth)
-                Health[0] += 2;
+            if (type == Common.HealthType.Ketchup)
+            {
+                if (Health[0] + 2 < MaxHealth)
+                    Health[0] += 2;
+                else
+                    Health[0] = MaxHealth;
+            }
             else
-                Health[0] = MaxHealth;
-        }
-        else
-        {
-            Health[(int)type] += 2;
+            {
+                Health[(int)type] += 2;
+            }
         }
     }
 }

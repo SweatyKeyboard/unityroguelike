@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-    public int Salt;
+    public static int Salt;
     public bool Pause = false;
     public int Score;
     public int Timer;
@@ -19,11 +19,14 @@ public class GameController : MonoBehaviour
 
     bool pauseClicked = false;
     float nextActTime = 0f;
-    
+
 
     void Update()
     {
-        if (!pauseClicked && Input.GetKey(KeyCode.Escape))
+        ButtonClick b = FindObjectOfType<ButtonClick>();
+        if (!pauseClicked &&
+            ((Application.isMobilePlatform && b.IsCliked && b.Key == KeyCode.Escape) ||
+            (!Application.isMobilePlatform) && Input.GetKey(KeyCode.Escape)))
         {
             pauseClicked = true;
             PauseGame();
@@ -34,12 +37,16 @@ public class GameController : MonoBehaviour
             nextActTime += 1f;
             Score -= 1;
             Timer++;
-            //FindObjectOfType<InfoText>().GetComponent<Text>().text = Score.ToString();
         }
     }
 
     void Start()
     {
+        if (!Application.isMobilePlatform)
+        {
+            foreach (GameObject g in GameObject.FindGameObjectsWithTag("Android"))
+                Destroy(g);
+        }
         NewGame();
     }
 
@@ -75,6 +82,7 @@ public class GameController : MonoBehaviour
         }
         Pause = !Pause;
         Invoke("PauseIsCliked", 0.5f);
+        FindObjectOfType<HPPos>().ForceStart();
     }
 
     void PauseIsCliked()

@@ -38,7 +38,7 @@ public class HudController : MonoBehaviour
             }
             else sprite = "EmptyHealthBar";
 
-            bars[bar].GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(sprite);
+            bars[bar].GetComponent<Image>().sprite = Resources.Load<Sprite>(sprite);
         }
 
         int additional = 0;
@@ -90,15 +90,15 @@ public class HudController : MonoBehaviour
                         if (x == playerPos.x && y == playerPos.y)
                             tile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.8f);
                         else
-                            tile.GetComponent<SpriteRenderer>().color = new Color(0.55f, 0.55f, 0.55f, 0.8f);
+                            tile.GetComponent<SpriteRenderer>().color = new Color(0.4f, 0.4f, 0.4f, 0.8f);
 
                     }
                     else
                     {
-                        if (x == bossPos.x && y == bossPos.y)
+                       /* if (x == bossPos.x && y == bossPos.y)
                             tile.GetComponent<SpriteRenderer>().color = new Color(0.4f, 0.2f, 0.2f, 0.8f);
-                        else
-                            tile.GetComponent<SpriteRenderer>().color = new Color(0.3f, 0.3f, 0.3f, 0.8f);
+                        else*/
+                            tile.GetComponent<SpriteRenderer>().color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
                     }
 
                     tile.transform.localScale = new Vector3(

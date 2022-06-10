@@ -33,7 +33,7 @@ public class Stove : MonoBehaviour
         if (!pause && collision.CompareTag("Player") && TurnedOn)
         {
             Instantiate(SmokeParticles, player.transform.position, transform.rotation);
-            FindObjectOfType<Player>().Hurt();
+            FindObjectOfType<Player>().Hurt("Плита");
             pause = true;
             Invoke("Unpause", 0.5f);
         }
