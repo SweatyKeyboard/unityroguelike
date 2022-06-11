@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ChasingEnemy : Enemy
 {
+    
     public override void Move()
     {
         Vector3 difference = target.transform.position - transform.position;

@@ -19,7 +19,7 @@ public class Enemy : MonoBehaviour
     {
         Health += (int)(Math.Pow(1.5, FindObjectOfType<GameController>().currentLevel) * 2) / 2;
         target = FindObjectOfType<Player>();
-        Invoke("Activate", 0.8f);
+        Invoke("Activate", 1f);
     }
 
     public void Update()
@@ -75,6 +75,10 @@ public class Enemy : MonoBehaviour
         {
             Destroy(col.gameObject);
             Hurt(target.Damage, 0.1f);
+        }
+        else if (col.gameObject.CompareTag("EnemyBullet"))
+        {
+            Destroy(col.gameObject);
         }
         else if (col.gameObject.CompareTag("Player"))
         {

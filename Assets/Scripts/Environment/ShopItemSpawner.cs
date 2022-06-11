@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ public class ShopItemSpawner : MonoBehaviour
 
     public List<GameObject> Items;
     public List<int> Weights;
+    public int IndexInRoom;
 
     void Start()
     {
@@ -22,7 +24,7 @@ public class ShopItemSpawner : MonoBehaviour
 
     public void Activate()
     {
-        int rand = Random.Range(0, Weights.Sum() + 1);
+        int rand = UnityEngine.Random.Range(0, Weights.Sum() + 1);
         int index = -1;
 
         for (int c = 0, s = 0; c < Weights.Count; c++)
@@ -38,16 +40,32 @@ public class ShopItemSpawner : MonoBehaviour
         if (index == -1)
             index = Weights.Count - 1;
 
-        GameObject g = Instantiate(Items[index], transform.position, transform.rotation);
+        GameObject g = Instantiate(Items[index], transform.position, transform.rotation, transform.parent);
         g.GetComponent<SpriteRenderer>().sortingOrder = -2;
         g.GetComponent<ShopItem>().IsForSale = true;
+        g.AddComponent<Interactive>().Type = Common.InteractiveType.ShopItem;
+        g.GetComponent<Interactive>().Index = IndexInRoom;
+        g.transform.localScale = new Vector3(0.4f,0.4f,0);
         
 
         Destroy(gameObject);
     }
 
-    public void ActivateOld()
+    public void ActivateOld(string objName)
     {
+        objName = objName.Substring(0, objName.IndexOf('('));
+        int index = Convert.ToInt32(new string(objName.Where(x => char.IsDigit(x)).ToArray()));
+
+        GameObject g = Instantiate(
+            Resources.Load<GameObject>("Items/"+objName),
+            transform.position, transform.rotation,
+            transform.parent);
+        g.GetComponent<SpriteRenderer>().sortingOrder = -2;
+        g.GetComponent<ShopItem>().IsForSale = true;
+        g.AddComponent<Interactive>().Type = Common.InteractiveType.ShopItem;
+        g.GetComponent<Interactive>().Index = IndexInRoom;
+        g.transform.localScale = new Vector3(0.4f, 0.4f, 0);
+
         Destroy(gameObject);
     }
 

@@ -19,8 +19,8 @@ public class CutlerySpawner : MonoBehaviour
     public void Activate()
     {
         ChoosenInd = UnityEngine.Random.Range(0, Possible.Count);
-        GameObject g = Resources.Load<GameObject>("Objects/Cutlery" + ChoosenInd);
-        Instantiate(g, transform.position, transform.rotation/*, GameObject.FindGameObjectWithTag("Room").transform*/);
+        int levelType = LevelController.thisLevelType;
+        GameObject g =  Instantiate(Resources.Load<GameObject>("Objects/Cutlery" + (levelType * 10 + ChoosenInd)), transform.position, transform.rotation/*, GameObject.FindGameObjectWithTag("Room").transform*/);
         g.GetComponent<Interactive>().Index = IndexInRoom;
         Destroy(gameObject);
     }
@@ -28,8 +28,8 @@ public class CutlerySpawner : MonoBehaviour
     public void ActivateOld(string spriteName)
     {
         ChoosenInd = Convert.ToInt32(new string(spriteName.Where(x => char.IsDigit(x)).ToArray()));      
-        GameObject g = Resources.Load<GameObject>("Objects/" + spriteName);
-        Instantiate(g, transform.position, transform.rotation/*, GameObject.FindGameObjectWithTag("Room").transform*/);
+        
+        GameObject g = Instantiate(Resources.Load<GameObject>("Objects/" + spriteName), transform.position, transform.rotation/*, GameObject.FindGameObjectWithTag("Room").transform*/);
         g.GetComponent<Interactive>().Index = IndexInRoom;
         Destroy(gameObject);
     }

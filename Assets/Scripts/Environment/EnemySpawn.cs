@@ -20,7 +20,7 @@ public class EnemySpawn : MonoBehaviour
     public void Activate()
     {
         FindObjectOfType<LevelController>().NewEnemies();
-        Instantiate(types[UnityEngine.Random.Range(0, types.Count)], transform.position, transform.rotation);
+        GameObject g = Instantiate(types[Random.Range(0, types.Count)], transform.position, transform.rotation);
         Destroy(gameObject);
     }
 

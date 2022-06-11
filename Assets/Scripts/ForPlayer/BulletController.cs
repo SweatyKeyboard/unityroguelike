@@ -33,5 +33,15 @@ public class BulletController : MonoBehaviour
         Instantiate(Splash, transform.position, transform.rotation);
     }
 
-    
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (! (collision.gameObject.CompareTag("Particles") ||
+               collision.gameObject.CompareTag("PlayerTrail") ||
+               collision.gameObject.CompareTag("EnemyTrail") ||
+               collision.gameObject.CompareTag("Player") ||
+               collision.gameObject.CompareTag("Enemy")))
+            Destroy(gameObject);
+    }
+
+
 }

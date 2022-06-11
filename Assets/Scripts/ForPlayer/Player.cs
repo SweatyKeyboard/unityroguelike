@@ -91,7 +91,8 @@ public class Player : MonoBehaviour
             moveVertical = MovingJoystick.Vertical;
         }
         Vector3 movement = new Vector3(moveHorizontal, moveVertical, 0f);
-        player.AddForce(movement * Speed);
+        player.AddForce(movement * Speed * 5);
+        
     }
 
    /* void OnCollisionEnter2D(Collision2D col)
@@ -123,6 +124,7 @@ public class Player : MonoBehaviour
     {
         player.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1f);
         invulnerable = false;
+
     }
 
     public void Hurt(string who)
@@ -178,6 +180,16 @@ public class Player : MonoBehaviour
             {
                 Health[(int)type] += 2;
             }
+        }
+    }
+
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("EnemyBullet"))
+        {
+            Hurt("Пуля");
+            Destroy(collision.gameObject);
         }
     }
 }

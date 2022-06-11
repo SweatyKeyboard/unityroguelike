@@ -15,14 +15,14 @@ public class HudController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void UpdateHP()
     {
         GameObject[] bars = GameObject.FindGameObjectsWithTag("HealthHUD");
         Player player = FindObjectOfType<Player>();
-        int[] hp = player.Health;       
+        int[] hp = player.Health;
 
 
         for (int bar = 0, hlth = 0; bar < player.MaxHealth / 2; bar++)
@@ -43,7 +43,7 @@ public class HudController : MonoBehaviour
 
         int additional = 0;
         for (int i = 1; i < hp.Length; i++)
-        {            
+        {
             int typedBars = (int)Math.Ceiling(hp[i] / 2.0);
 
             for (int j = player.MaxHealth / 2; j < bars.Length; j++)
@@ -62,13 +62,13 @@ public class HudController : MonoBehaviour
                     FindObjectOfType<HPPos>().AddHeart(player.MaxHealth / 2 + additional++, sprite);
                 }
 
-                
+
             }
         }
 
     }
 
-    public void DrawMiniMap(int[,] rooms, bool[,] visited, Common.Coords playerPos, Common.Coords bossPos)
+    public void DrawMiniMap(Map map, Common.Coords playerPos)
     {
 
         foreach (GameObject mapTile in GameObject.FindGameObjectsWithTag("MapTile"))
@@ -76,45 +76,44 @@ public class HudController : MonoBehaviour
 
         int lvlSize = FindObjectOfType<LevelController>().levelSize;
         GameObject mmap = GameObject.Find("MiniMap");
+
+        float sizeMod = 1.5f / lvlSize;
+        float bias = 1.9f / lvlSize;
         for (int x = 0; x < lvlSize; x++)
             for (int y = 0; y < lvlSize; y++)
             {
-                if (rooms[x, y] != 0)
+                if (map.Prototypes[x, y] != 0)
                 {
-                    float sizeMod = 1.5f / lvlSize;
-                    float bias = 1.9f / lvlSize;
-
-                    GameObject tile = Resources.Load<GameObject>("MapTile");
-                    if (visited[x, y])
+                    if (map.Known[x, y])
                     {
-                        if (x == playerPos.x && y == playerPos.y)
-                            tile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.8f);
+                        Vector3 position = new Vector3(
+                            mmap.transform.position.x - bias * (x - lvlSize / 2),
+                            mmap.transform.position.y - bias * (y - lvlSize / 2),
+                            0);
+                        GameObject tile = Instantiate(Resources.Load<GameObject>("MapTile"), position, mmap.transform.rotation);
+                        if (map.Visited[x, y])
+                        {
+                            if (x == playerPos.x && y == playerPos.y)
+                                tile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.8f);
+                            else
+                                tile.GetComponent<SpriteRenderer>().color = new Color(0.4f, 0.4f, 0.4f, 0.8f);
+
+                        }
                         else
-                            tile.GetComponent<SpriteRenderer>().color = new Color(0.4f, 0.4f, 0.4f, 0.8f);
+                        {
+                                tile.GetComponent<SpriteRenderer>().color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+                        }
 
-                    }
-                    else
-                    {
-                       /* if (x == bossPos.x && y == bossPos.y)
+                        if (x == map.bossCoords.x && y == map.bossCoords.y)
                             tile.GetComponent<SpriteRenderer>().color = new Color(0.4f, 0.2f, 0.2f, 0.8f);
-                        else*/
-                            tile.GetComponent<SpriteRenderer>().color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+                        else
+                                if (x == map.shopCoords.x && y == map.shopCoords.y)
+                            tile.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.45f, 0.2f, 0.8f);
+
+                        tile.transform.localScale = new Vector3(
+                            sizeMod, sizeMod, 0
+                            );
                     }
-
-                    tile.transform.localScale = new Vector3(
-                        sizeMod, sizeMod, 0
-                        );
-
-                    Vector3 position = new Vector3(
-                        mmap.transform.position.x - bias * (x - lvlSize/2),
-                        mmap.transform.position.y - bias * (y - lvlSize/2),
-                        0);
-
-
-                    Instantiate(tile, position, mmap.transform.rotation);
-
-
-
                 }
             }
 
