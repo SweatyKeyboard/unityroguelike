@@ -18,6 +18,7 @@ public class Enemy : MonoBehaviour
     public virtual void Start()
     {
         Health += (int)(Math.Pow(1.5, FindObjectOfType<GameController>().currentLevel) * 2) / 2;
+        Speed *= 1.5f;
         target = FindObjectOfType<Player>();
         Invoke("Activate", 1f);
     }
@@ -89,7 +90,7 @@ public class Enemy : MonoBehaviour
     private void OnDestroy()
     {
         FindObjectOfType<LevelController>().AreEnemiesDead();
-        FindObjectOfType<GameController>().Score += Cost;
-        FindObjectOfType<GameController>().EnemiesKilled++;
+        GameController.Score += Cost;
+        GameController.EnemiesKilled++;
     }
 }

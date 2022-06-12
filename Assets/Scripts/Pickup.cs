@@ -67,14 +67,21 @@ public class Pickup : MonoBehaviour
 
                     case Common.ItemType.Pepper:
                         {
-                            int rand = Random.Range(1, 4);
-                            cost = rand * 3;
+
+                            int pepper = (game.currentLevel);
+                            cost = 3 * pepper;
+                            if (PlayerPrefs.HasKey("Pepper"))
+                                pepper += PlayerPrefs.GetInt("Pepper");
+
+                            PlayerPrefs.SetInt("Pepper", pepper);
+                            
                         }
                         break;
 
                     case Common.ItemType.Cucumber:
                         {
-                            player.Damage += 0.25f;                            
+                            player.DamageBar++;
+                            player.UpdateCharacteristics();
                             message = "Урон повышен";
                             cost = 25;
                         }
@@ -82,7 +89,8 @@ public class Pickup : MonoBehaviour
 
                     case Common.ItemType.Tomato:
                         {
-                            player.Range += 0.05f;
+                            player.RangeBar++;
+                            player.UpdateCharacteristics();
                             message = "Дальность стрельбы повышена";
                             cost = 25;
                         }
@@ -90,7 +98,8 @@ public class Pickup : MonoBehaviour
 
                     case Common.ItemType.Cheese:
                         {
-                            player.RateOfFire -= 0.1f;
+                            player.RateOfFireBar++;
+                            player.UpdateCharacteristics();
                             message = "Скорость стрельбы повышена";
                             cost = 25;
                         }
@@ -98,7 +107,8 @@ public class Pickup : MonoBehaviour
 
                     case Common.ItemType.Salad:
                         {
-                            player.Speed += 2f;
+                            player.SpeedBar++;
+                            player.UpdateCharacteristics();
                             message = "Скорость повышена";
                             cost = 25;
                         }
@@ -106,7 +116,8 @@ public class Pickup : MonoBehaviour
 
                     case Common.ItemType.Bacon:
                         {
-                            player.BulletSpeed += 0.08f;
+                            player.BulletSpeedBar++;
+                            player.UpdateCharacteristics();
                             message = "Скорость пуль повышена";
                             cost = 25;
                         }
@@ -123,8 +134,8 @@ public class Pickup : MonoBehaviour
                 }
                 if (message != "")
                     FindObjectOfType<InfoText>().ShowText(message, 2f);
-                FindObjectOfType<GameController>().Score -= cost;
-                FindObjectOfType<GameController>().BonusesCollected++;
+                GameController.Score -= cost;
+                GameController.BonusesCollected++;
 
                 Destroy(gameObject);
             }

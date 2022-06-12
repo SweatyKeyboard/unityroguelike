@@ -41,8 +41,8 @@ public class Downfloor : MonoBehaviour
         {
             stopWatchingButton = true;
             FindObjectOfType<LevelController>().NewLevelPart1();
-            FindObjectOfType<GameController>().Score =
-                (int)(FindObjectOfType<GameController>().Score * 1.2) +
+            GameController.Score =
+                (int)(GameController.Score * 1.2) +
                 300 * FindObjectOfType<GameController>().currentLevel;
         }
     }

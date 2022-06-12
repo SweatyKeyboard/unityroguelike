@@ -14,7 +14,7 @@ public class SceneChanger : MonoBehaviour
 
 	public void SaveAndOpenMenu()
     {
-		int score = FindObjectOfType<GameController>().Score;
+		int score = GameController.Score;
 		string name = LinkedTextInput.text;
 
 		if (!PlayerPrefs.HasKey("RecordsCount"))

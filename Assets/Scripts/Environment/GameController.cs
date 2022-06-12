@@ -6,12 +6,13 @@ public class GameController : MonoBehaviour
 {
     public static int Salt;
     public bool Pause = false;
-    public int Score;
-    public int Timer;
-    public int EnemiesKilled;
-    public int BonusesCollected;
-    public int RoomsCleared;
-    public int FloorsCompleted;
+
+    public static int Score;
+    public static int Timer;
+    public static int EnemiesKilled;
+    public static int BonusesCollected;
+    public static int RoomsCleared;
+    public static int FloorsCompleted;
     public int currentLevel = 1;
 
     public GameObject PauseMenu;
@@ -92,6 +93,12 @@ public class GameController : MonoBehaviour
 
     public void EndGame()
     {
+        if (Pause)
+            PauseGame();
+
+        foreach (ButtonClick b in FindObjectsOfType<ButtonClick>())
+            b.gameObject.SetActive(false);
+
         EndMenu.SetActive(true);
         Pause = true;
         Time.timeScale = 0f;

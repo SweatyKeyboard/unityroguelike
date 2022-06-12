@@ -7,7 +7,7 @@ using UnityEngine;
 
 static class Matrix
 {
-    public static int[,] DistanceMatrix(int[,] matrix, Common.Coords from)
+    public static int[,] DistanceMatrix(int[,] matrix, List<Common.Coords> from)
     {
         int[,] answer = new int[matrix.GetLength(0), matrix.GetLength(1)];
         for (int x = 0; x < matrix.GetLength(0); x++)
@@ -16,7 +16,8 @@ static class Matrix
                     answer[x, y] = -1;
                 else
                     answer[x, y] = -2;
-        answer[from.x, from.y] = 0;
+        foreach (Common.Coords coord in from)
+            answer[coord.x, coord.y] = 0;
 
         for (int d = 0; Count(answer, -1) > 0; d++)
         {
@@ -77,7 +78,7 @@ static class Matrix
         return positions;
     }
 
-    public static Common.Coords RandomFarthest(int[,] matrix, Common.Coords from)
+    public static Common.Coords RandomFarthest(int[,] matrix, List<Common.Coords> from)
     {
         int[,] distances = DistanceMatrix(matrix, from);
         int max = Max(distances);
@@ -88,7 +89,7 @@ static class Matrix
         return new Common.Coords(list[rand].x, list[rand].y);
     }
 
-    public static Common.Coords RandomFarthestExcept(int[,] matrix, Common.Coords from, List<Common.Coords> except)
+    public static Common.Coords RandomFarthestExcept(int[,] matrix, List<Common.Coords> from, List<Common.Coords> except)
     {
         Common.Coords res;
         int counter = 0;

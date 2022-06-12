@@ -6,11 +6,19 @@ using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
-    public float Speed;
-    public float BulletSpeed;
-    public float RateOfFire;
-    public float Range;
+
+    public int SpeedBar;
+    public int BulletSpeedBar;
+    public int RateOfFireBar;
+    public int RangeBar;
+    public int DamageBar;
+    float Speed;
+    float BulletSpeed;
+    float RateOfFire;
+    float Range;
     public float Damage;
+
+
     public GameObject BulletPrefab;
     public GameObject ParticlesPrefab;
     public int MaxHealth;
@@ -35,10 +43,23 @@ public class Player : MonoBehaviour
         player = GetComponent<Rigidbody2D>();
         lastFire = Time.time;
 
-        Speed *= 25;
-        BulletSpeed *= 8;
-        RateOfFire = 1 / RateOfFire;
-        Range /= 1.75f;
+        SpeedBar = PlayerPrefs.GetInt("SkillsSpeed");
+        BulletSpeedBar = PlayerPrefs.GetInt("SkillsBulletSpeed");
+        RateOfFireBar = PlayerPrefs.GetInt("SkillsRoF");
+        DamageBar = PlayerPrefs.GetInt("SkillsDamage");
+        RangeBar = PlayerPrefs.GetInt("SkillsRange");
+        MaxHealth = PlayerPrefs.GetInt("SkillsMaxHealth") * 2;
+
+        UpdateCharacteristics();
+    }
+
+    public void UpdateCharacteristics()
+    {
+        RateOfFire = 1.66f - (float)(Math.Pow(RateOfFireBar, 0.9) / 5);
+        Damage = 2.5f + (float)(Math.Pow(1.5, DamageBar) / 10);
+        Range = 0.4f + (float)(Math.Pow(RangeBar, 0.9) / 7.94);
+        Speed = 10 + SpeedBar * 2;
+        BulletSpeed = 5 + BulletSpeedBar / 4;
     }
 
     void Update()
@@ -155,7 +176,7 @@ public class Player : MonoBehaviour
                 FindObjectOfType<GameController>().EndGame();
             }
 
-            FindObjectOfType<GameController>().Score -= 10;
+            GameController.Score -= 10;
             player.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
             invulnerable = true;
             FindObjectOfType<HudController>().UpdateHP();

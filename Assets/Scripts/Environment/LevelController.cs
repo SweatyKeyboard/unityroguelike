@@ -9,7 +9,7 @@ public class LevelController : MonoBehaviour
 {
     public int levelSize;
     public int center;
-    public  static int thisLevelType;
+    public static int thisLevelType;
 
     int[,] roomPrototypes;
     Map map;
@@ -35,7 +35,7 @@ public class LevelController : MonoBehaviour
         center = levelSize / 2;
         bossDefeated = false;
         thisLevelType = UnityEngine.Random.Range(0, 3);
-        FindObjectOfType<GameController>().FloorsCompleted++;
+        GameController.FloorsCompleted++;
 
         Image overlay = GameObject.FindGameObjectWithTag("Overlay").GetComponent<Image>();
 
@@ -71,6 +71,7 @@ public class LevelController : MonoBehaviour
 
         FindObjectOfType<HudController>().DrawMiniMap(map, playerPos);
 
+        UpdateWalls();
 
         StartCoroutine(
            SmoothColor(GameObject.FindGameObjectWithTag("Overlay").GetComponent<Image>(),
@@ -102,7 +103,7 @@ public class LevelController : MonoBehaviour
                 bossDefeated = true;
             }
 
-            FindObjectOfType<GameController>().RoomsCleared++;
+            GameController.RoomsCleared++;
         }
     }
 
@@ -123,14 +124,28 @@ public class LevelController : MonoBehaviour
         } while (currTime <= time);
     }
 
+    public void UpdateWalls()
+    {
+        int col;
+        if (map.Prototypes[playerPos.x, playerPos.y] > 0)
+            col = thisLevelType;
+        else
+            col = map.Prototypes[playerPos.x, playerPos.y];
+
+        foreach (Wall w in FindObjectsOfType<Wall>())
+        {
+            w.SetColor(col);
+        }
+    }
+
     public void WalkToPart1(int x, int y, int i)
     {
         roomItems[playerPos.x, playerPos.y].Clear();
         foreach (GameObject p in GameObject.FindGameObjectsWithTag("Item"))
         {
             ShopItem sh;
-            bool b = p.TryGetComponent<ShopItem>(out sh);
-            if (b && sh.IsForSale)
+            bool b = p.TryGetComponent(out sh);
+            if (!b || b && !sh.IsForSale)
             {
                 roomItems[playerPos.x, playerPos.y].Add(
                     new MemoryItem(
@@ -155,11 +170,13 @@ public class LevelController : MonoBehaviour
                     p.GetComponent<Interactive>().Index,
                     p.GetComponent<SpriteRenderer>().sprite.name));
             else if (p.GetComponent<Interactive>().Type == Common.InteractiveType.ShopItem)
+            {
                 roomInteractives[playerPos.x, playerPos.y].Add(
                     new MemoryInteractive(
                     Common.InteractiveType.ShopItem,
                     p.GetComponent<Interactive>().Index,
                     p.name));
+            }
 
         }
 
@@ -179,6 +196,7 @@ public class LevelController : MonoBehaviour
 
     public void WalkToPart2()
     {
+        UpdateWalls();
 
         Destroy(GameObject.FindGameObjectWithTag("Room"));
 
@@ -250,8 +268,8 @@ public class LevelController : MonoBehaviour
             for (int s = 0; s < FindObjectsOfType<ShopItemSpawner>().Length; s++)
                 FindObjectsOfType<ShopItemSpawner>()[s].Activate();
 
-            FindObjectOfType<GameController>().Score =
-                (int)(FindObjectOfType<GameController>().Score * 1.05);
+            GameController.Score =
+                (int)(GameController.Score * 1.05);
         }
         else
         {
@@ -447,15 +465,15 @@ public class LevelController : MonoBehaviour
 
             map = new Map(roomPrototypes);
 
-            Common.Coords bossRoom = Matrix.RandomFarthest(roomPrototypes, new Common.Coords(center, center));
+            Common.Coords bossRoom = Matrix.RandomFarthest(roomPrototypes, new List<Common.Coords> { new Common.Coords(center, center) });
             roomPrototypes[bossRoom.x, bossRoom.y] = 
                 (thisLevelType + 1) * 100 +
                 90 +
                 UnityEngine.Random.Range(0,1);
 
             Common.Coords shopRoom = Matrix.RandomFarthestExcept(
-                roomPrototypes, 
-                bossRoom,
+                roomPrototypes,
+                new List<Common.Coords> { bossRoom, new Common.Coords(center, center) },
                 new List<Common.Coords>() { new Common.Coords(levelSize / 2, levelSize /2)});
                 roomPrototypes[shopRoom.x, shopRoom.y] = -1;
 
