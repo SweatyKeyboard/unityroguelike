@@ -1,45 +1,34 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Entrance : MonoBehaviour
 {
-    public bool Active;
-    public int XMod, YMod;
-    public int Id;
-
-    void Start()
-    {
-    }
-
-    void Update()
-    {
-        
-    }
+    [SerializeField] bool active;
+    [SerializeField] int xmod, ymod;
+    [SerializeField] int id;
 
     public void Deactivate()
     {
         GetComponent<Image>().color = new Color(1, 1, 1, 0);
-        Active = false;
+        active = false;
     }
 
     public void Activate()
     {
         GetComponent<Image>().color = new Color(1, 1, 1, 1);
-        Active = true;
+        active = true;
     }
 
 
     private void OnTriggerStay2D(Collider2D collision)
     {
         ButtonClick b = FindObjectOfType<ButtonClick>();
-        if (Active && collision.CompareTag("Player") &&
+        if (active && collision.CompareTag("Player") &&
             ((Application.isMobilePlatform && b.IsCliked && b.Key == KeyCode.Space) ||
             (!Application.isMobilePlatform) && Input.GetKey(KeyCode.Space)))
         {
             Deactivate();
-            FindObjectOfType<LevelController>().WalkToPart1(XMod, YMod, Id);
+            FindObjectOfType<LevelController>().WalkToPart1(xmod, ymod, id);
         }
     }
 }

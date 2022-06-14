@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -6,22 +5,18 @@ using System;
 
 public class CutlerySpawner : MonoBehaviour
 {
-    public List<GameObject> Possible;
-    public int ChoosenInd;
-    public int IndexInRoom;
+    [SerializeField] List<GameObject> possible;
+    [SerializeField] int indexInRoom;
+    int ChoosenInd;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public int IndexInRoom { get { return indexInRoom; } }
 
     public void Activate()
     {
-        ChoosenInd = UnityEngine.Random.Range(0, Possible.Count);
+        ChoosenInd = UnityEngine.Random.Range(0, possible.Count);
         int levelType = LevelController.thisLevelType;
         GameObject g =  Instantiate(Resources.Load<GameObject>("Objects/Cutlery" + (levelType * 10 + ChoosenInd)), transform.position, transform.rotation/*, GameObject.FindGameObjectWithTag("Room").transform*/);
-        g.GetComponent<Interactive>().Index = IndexInRoom;
+        g.GetComponent<Interactive>().Index = indexInRoom;
         Destroy(gameObject);
     }
 
@@ -30,13 +25,7 @@ public class CutlerySpawner : MonoBehaviour
         ChoosenInd = Convert.ToInt32(new string(spriteName.Where(x => char.IsDigit(x)).ToArray()));      
         
         GameObject g = Instantiate(Resources.Load<GameObject>("Objects/" + spriteName), transform.position, transform.rotation/*, GameObject.FindGameObjectWithTag("Room").transform*/);
-        g.GetComponent<Interactive>().Index = IndexInRoom;
+        g.GetComponent<Interactive>().Index = indexInRoom;
         Destroy(gameObject);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

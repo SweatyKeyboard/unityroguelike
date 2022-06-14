@@ -1,22 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Pickup : MonoBehaviour
 {
-    public Common.ItemType Type;
+    [SerializeField] Common.ItemType type;
+    [SerializeField] AudioClip sound;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -30,7 +20,10 @@ public class Pickup : MonoBehaviour
                 string message = "";
                 int cost = 0;
 
-                switch (Type)
+                if (!GetComponent<ShopItem>().IsForSale)
+                    AudioSource.PlayClipAtPoint(sound, new Vector3(0,0,-10));
+
+                switch (type)
                 {
                     case Common.ItemType.HealthK:
                         {
@@ -82,7 +75,7 @@ public class Pickup : MonoBehaviour
                         {
                             player.DamageBar++;
                             player.UpdateCharacteristics();
-                            message = "Урон повышен";
+                            message = "Damage up";
                             cost = 25;
                         }
                         break;
@@ -91,7 +84,7 @@ public class Pickup : MonoBehaviour
                         {
                             player.RangeBar++;
                             player.UpdateCharacteristics();
-                            message = "Дальность стрельбы повышена";
+                            message = "Bullet lifetime up";
                             cost = 25;
                         }
                         break;
@@ -100,7 +93,7 @@ public class Pickup : MonoBehaviour
                         {
                             player.RateOfFireBar++;
                             player.UpdateCharacteristics();
-                            message = "Скорость стрельбы повышена";
+                            message = "Rate o fire up";
                             cost = 25;
                         }
                         break;
@@ -109,7 +102,7 @@ public class Pickup : MonoBehaviour
                         {
                             player.SpeedBar++;
                             player.UpdateCharacteristics();
-                            message = "Скорость повышена";
+                            message = "Speed up";
                             cost = 25;
                         }
                         break;
@@ -118,7 +111,7 @@ public class Pickup : MonoBehaviour
                         {
                             player.BulletSpeedBar++;
                             player.UpdateCharacteristics();
-                            message = "Скорость пуль повышена";
+                            message = "Bullet speed up";
                             cost = 25;
                         }
                         break;
@@ -126,7 +119,7 @@ public class Pickup : MonoBehaviour
                     case Common.ItemType.Burger:
                         {
                             player.MaxHealth += 2;
-                            message = "Максимальное здоровье повышено";
+                            message = "Max HP up";
                             FindObjectOfType<HPPos>().GetUpdates();
                             cost = 40;
                         }

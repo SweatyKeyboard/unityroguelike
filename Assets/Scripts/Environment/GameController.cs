@@ -21,6 +21,8 @@ public class GameController : MonoBehaviour
     bool pauseClicked = false;
     float nextActTime = 0f;
 
+    [SerializeField] AudioClip loseSound;
+
 
     void Update()
     {
@@ -53,6 +55,14 @@ public class GameController : MonoBehaviour
 
     public void NewGame()
     {
+        Score = 1000;
+        Timer = 0;
+        EnemiesKilled = 0;
+        BonusesCollected = 0;
+        RoomsCleared = 0;
+        FloorsCompleted = 0;
+
+        currentLevel = 1;
         nextActTime = 0f;
         Score = 1000;
         float k = 4f / 3f;
@@ -93,6 +103,7 @@ public class GameController : MonoBehaviour
 
     public void EndGame()
     {
+        AudioSource.PlayClipAtPoint(loseSound, Camera.main.transform.position);
         if (Pause)
             PauseGame();
 
@@ -103,11 +114,11 @@ public class GameController : MonoBehaviour
         Pause = true;
         Time.timeScale = 0f;
         Text txt = GameObject.Find("StatsText").GetComponent<Text>();
-        txt.text = $"Пройдено этажей: {FloorsCompleted - 1}\n"+
-                   $"Зачищено комнат: {RoomsCleared}\n"+
-                   $"Убито врагов: {EnemiesKilled}\n"+
-                   $"Собрано бонусов: {BonusesCollected}\n"+                 
-                   $"Время: {TimeSpan.FromSeconds(Timer).ToString(@"mm\:ss")}\n"+
-                   $"Итоговый счет: {Score}\n";
+        txt.text = $"Floors cleared: {FloorsCompleted - 1}\n"+
+                   $"Rooms cleared: {RoomsCleared}\n"+
+                   $"Enemies killed: {EnemiesKilled}\n"+
+                   $"Bonuses collected: {BonusesCollected}\n"+                 
+                   $"Time: {TimeSpan.FromSeconds(Timer).ToString(@"mm\:ss")}\n"+
+                   $"Score: {Score}\n";
     }
 }

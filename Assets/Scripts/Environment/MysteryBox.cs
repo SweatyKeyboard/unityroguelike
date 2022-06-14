@@ -1,30 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class MysteryBox : MonoBehaviour
 {
-    public GameObject ParticleSystem;
-    public List<GameObject> PossibleBonuses;
-    public List<int> BonusWeight;
-    public float Chance;
+    [SerializeField]  GameObject ParticleSystem;
+    [SerializeField]  List<GameObject> PossibleBonuses;
+    [SerializeField]  List<int> BonusWeight;
+    [SerializeField]  float Chance;
+    [SerializeField] AudioClip sound;
 
-    // Start is called before the first frame update
     void Start()
     {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        GetComponent<AudioSource>().clip = sound;
     }
 
     void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.CompareTag("Bullet"))
         {
+            AudioSource.PlayClipAtPoint(sound, new Vector3(0, 0, -10));
             if (Random.Range(0f, 100f) < Chance)
             {
                 int rand = Random.Range(0, BonusWeight.Sum() + 1);

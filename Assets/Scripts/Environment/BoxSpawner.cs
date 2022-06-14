@@ -1,37 +1,24 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BoxSpawner : MonoBehaviour
 {
 
-    public float Chance;
-    public List<GameObject> Box;
-    public bool LessChance = true;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [SerializeField] float chance;
+    [SerializeField] List<GameObject> box;
+    [SerializeField] bool lessChance = true;
 
     public void Activate()
     {
-        if (LessChance)
-            Chance /= 1.5f * (FindObjectsOfType<MysteryBox>().Length + 0.25f);
+        if (lessChance)
+            chance /= 1.5f * (FindObjectsOfType<MysteryBox>().Length + 0.25f);
 
         Quaternion angle = Quaternion.Euler(0, 0, Random.Range(0f,360f));
 
-        int type = Random.Range(0, Box.Count);
+        int type = Random.Range(0, box.Count);
 
-        if (Random.Range(0f, 100f) < Chance)
-            Instantiate(Box[type], transform.position, angle);
+        if (Random.Range(0f, 100f) < chance)
+            Instantiate(box[type], transform.position, angle);
         Destroy(gameObject);
     }
 

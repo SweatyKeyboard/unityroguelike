@@ -1,52 +1,68 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ShopItem : MonoBehaviour
 {
-    public bool IsForSale = false;
-    public int Price;
-    public bool Bought = false;
+    [SerializeField] bool isForSale = false;
+    [SerializeField] int price;
+    [SerializeField] bool bought = false;
+    [SerializeField] AudioClip sound;
 
-    void Start()
+    public bool IsForSale
     {
-        
+        get { return isForSale; }
+        set { isForSale = value; }
     }
 
-    void Update()
+    public int Price
     {
-        
+        get { return price; }
     }
+
+    public bool Bought
+    {
+        get { return bought; }
+    }
+
+    bool keyBlocker = false;
+
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player") && IsForSale)
+        if (collision.CompareTag("Player") && isForSale)
         {
-            FindObjectOfType<InfoText>().ShowText("Цена: " + Price + " ед. соли");
+            FindObjectOfType<InfoText>().ShowText("Price: " + price + " salt");
         }
 
         ButtonClick b = FindObjectOfType<ButtonClick>();
-        if (collision.CompareTag("Player") && IsForSale && !Bought &&
+        if (!keyBlocker && collision.CompareTag("Player") && isForSale && !bought &&
             ((Application.isMobilePlatform && b.IsCliked && b.Key == KeyCode.Space) ||
             (!Application.isMobilePlatform) && Input.GetKey(KeyCode.Space)))
         {
-            if (GameController.Salt >= Price)
+            keyBlocker = true;
+            Invoke("UnlockKey", 0.5f);
+            if (GameController.Salt >= price)
             {
-                Bought = true;
-                GameController.Salt -= Price;
+                bought = true;
+                GameController.Salt -= price;
                 GameObject.Find("SaltCounter").GetComponent<Text>().text = GameController.Salt.ToString();
+                AudioSource.PlayClipAtPoint(sound, Camera.main.transform.position);
             }
             else
             {
-                FindObjectOfType<InfoText>().ShowText("Недостаточно соли",1.5f, new Color(0.9f,0.3f,0.3f));
+                FindObjectOfType<InfoText>().ShowText("Not enough salt",1.5f, new Color(0.9f,0.3f,0.3f));
             }
         }
+    }
+
+    void UnlockKey()
+    {
+        keyBlocker = false;
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") && isForSale)
         {
             FindObjectOfType<InfoText>().HideText();
         }

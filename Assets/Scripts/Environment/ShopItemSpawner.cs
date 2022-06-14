@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ShopItemSpawner : MonoBehaviour
 {
@@ -11,16 +9,6 @@ public class ShopItemSpawner : MonoBehaviour
     public List<GameObject> Items;
     public List<int> Weights;
     public int IndexInRoom;
-
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
 
     public void Activate()
     {

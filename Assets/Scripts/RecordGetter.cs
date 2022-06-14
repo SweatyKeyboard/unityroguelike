@@ -51,7 +51,7 @@ public class RecordGetter : MonoBehaviour
         }
         else
         {
-            GetComponent<Text>().text = "Не обнаружено ни одного рекорда";
+            GetComponent<Text>().text = "There are no records";
         }
     }
 

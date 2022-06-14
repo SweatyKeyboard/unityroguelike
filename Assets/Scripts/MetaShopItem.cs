@@ -5,25 +5,29 @@ using UnityEngine.UI;
 
 public class MetaShopItem : MonoBehaviour
 {
-    public int StartPrice;
-    public string Item;
-    public float PriceModifier;
+    [SerializeField] int startPrice;
+    [SerializeField] string item;
+    [SerializeField] float priceModifier;
+    [SerializeField] string text;
 
-    public Text PriceUI;
+    [SerializeField] Text textUI;
+    [SerializeField] Text priceUI;
+    [SerializeField] Text pepperUI;
     int totalPrice;
 
     // Start is called before the first frame update
     void Start()
     {
         int i = 0;
-        if (PlayerPrefs.HasKey(Item))
-            i = PlayerPrefs.GetInt(Item);
+        if (PlayerPrefs.HasKey(item))
+            i = PlayerPrefs.GetInt(item);
 
-
+        totalPrice = startPrice;
         for (int c = 0; c < i; c++)
-            totalPrice = (int)(totalPrice * PriceModifier);
+            totalPrice = (int)(totalPrice * priceModifier);
 
-        PriceUI.text = StartPrice.ToString();
+        priceUI.text = totalPrice.ToString();
+        textUI.text = text + ": " + i;
     }
 
     // Update is called once per frame
@@ -34,14 +38,24 @@ public class MetaShopItem : MonoBehaviour
 
     public void Buy()
     {
-        int pepper = PlayerPrefs.GetInt("Pepper");
+        int pepper = 0;
+        if (PlayerPrefs.HasKey("Pepper"))
+            pepper = PlayerPrefs.GetInt("Pepper");
+
         if (pepper >= totalPrice)
         {
             pepper -= totalPrice;
             PlayerPrefs.SetInt("Pepper", pepper);
-            int i = PlayerPrefs.GetInt(Item);
-            PlayerPrefs.SetInt(Item, i+1);
+            pepperUI.text = pepper.ToString();
 
+            int i = PlayerPrefs.GetInt(item);
+            PlayerPrefs.SetInt(item, ++i);
+            textUI.text = text + ": " + (i);
+
+            totalPrice = startPrice;
+            for (int c = 0; c < i; c++)
+                totalPrice = (int)(totalPrice * priceModifier);
+            priceUI.text = totalPrice.ToString();
         }
     }
 }

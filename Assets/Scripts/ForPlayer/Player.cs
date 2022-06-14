@@ -26,6 +26,8 @@ public class Player : MonoBehaviour
     public FixedJoystick MovingJoystick;
     public FixedJoystick ShootingJoystick;
 
+    [SerializeField] AudioClip hurtSound;
+
 
     Rigidbody2D player;
     Vector2 moveInput, moveVelocity;
@@ -49,17 +51,18 @@ public class Player : MonoBehaviour
         DamageBar = PlayerPrefs.GetInt("SkillsDamage");
         RangeBar = PlayerPrefs.GetInt("SkillsRange");
         MaxHealth = PlayerPrefs.GetInt("SkillsMaxHealth") * 2;
+        Health[0] = MaxHealth;
 
         UpdateCharacteristics();
     }
 
     public void UpdateCharacteristics()
     {
-        RateOfFire = 1.66f - (float)(Math.Pow(RateOfFireBar, 0.9) / 5);
-        Damage = 2.5f + (float)(Math.Pow(1.5, DamageBar) / 10);
-        Range = 0.4f + (float)(Math.Pow(RangeBar, 0.9) / 7.94);
-        Speed = 10 + SpeedBar * 2;
-        BulletSpeed = 5 + BulletSpeedBar / 4;
+        RateOfFire = 1.6f - (float)(Math.Pow(RateOfFireBar, 0.9) / 5);
+        Damage = 2.6f + (float)(Math.Pow(1.5, DamageBar) / 10);
+        Range = 0.45f + (float)(Math.Pow(RangeBar, 0.9) / 7.94);
+        Speed = 11 + SpeedBar * 2;
+        BulletSpeed = 7 + BulletSpeedBar / 3;
     }
 
     void Update()
@@ -116,16 +119,9 @@ public class Player : MonoBehaviour
         
     }
 
-   /* void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.gameObject.CompareTag("Enemy"))
-        {
-            Hurt();
-        }
-    }*/
-
     void Shoot(float x, float y) 
     {
+        GetComponent<AudioSource>().Play();
         GameObject bullet = Instantiate(BulletPrefab, transform.position + new Vector3(x*0.5f,y*0.5f,0), transform.rotation);
         bullet.GetComponent<Rigidbody2D>().velocity = new Vector3(
             moveVelocity.x * 0.25f + x * BulletSpeed,
@@ -171,16 +167,20 @@ public class Player : MonoBehaviour
                 }
             }
 
-            if (Health[0] == 0)
-            {
-                FindObjectOfType<GameController>().EndGame();
-            }
-
+            AudioSource.PlayClipAtPoint(hurtSound, new Vector3(0, 0, -10));
             GameController.Score -= 10;
             player.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
             invulnerable = true;
             FindObjectOfType<HudController>().UpdateHP();
+
+            if (Health[0] == 0)
+            {
+                FindObjectOfType<GameController>().EndGame();
+            }
+            else
             Invoke("stillAlive", 0.5f);
+
+           
         }
 
 
@@ -209,7 +209,7 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("EnemyBullet"))
         {
-            Hurt("Пуля");
+            Hurt("Bullet");
             Destroy(collision.gameObject);
         }
     }

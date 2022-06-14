@@ -1,31 +1,30 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public string EnemyName;
-    public float Speed;
-    public float Health;
-    public int Cost;
-    public GameObject DeadEffect;
-    public GameObject DeadParticles;
+    [SerializeField] string EnemyName;
+    [SerializeField] protected float Speed;
+    [SerializeField] float Health;
+    [SerializeField] int Cost;
+    [SerializeField] GameObject DeadEffect;
+    [SerializeField] GameObject DeadParticles;
+    [SerializeField] AudioClip livingSound;
+    [SerializeField] AudioClip hurtSound;
 
     protected bool active = false;
     protected Player target;
-
     bool invulnerable;
 
     public virtual void Start()
     {
-        Health += (int)(Math.Pow(1.5, FindObjectOfType<GameController>().currentLevel) * 2) / 2;
-        Speed *= 1.5f;
+        Health += (int)(Math.Pow(1.5, GameController.FloorsCompleted) * 2) / 3;
+        Speed += (int)(Math.Pow(1.5, GameController.FloorsCompleted) * 2) / 3.5f;
         target = FindObjectOfType<Player>();
-        Invoke("Activate", 1f);
-    }
 
-    public void Update()
-    {
-        
+        float startTime = UnityEngine.Random.Range(0.8f, 1.2f);
+        Invoke("Activate", startTime);
     }
 
     public void Hurt(float hp, float invTime)
@@ -35,6 +34,8 @@ public class Enemy : MonoBehaviour
             GetComponent<SpriteRenderer>().color = new Color(1, 0.8f, 0.8f, 0.7f);
             invulnerable = true;
             Health -= hp;
+
+            AudioSource.PlayClipAtPoint(hurtSound, new Vector3(0, 0, -10));
 
             if (Health <= 0)
             {
@@ -64,6 +65,7 @@ public class Enemy : MonoBehaviour
     public void Activate()
     {
         active = true;
+        StartCoroutine(MakeSound());
     }
     public virtual void Move()
     {
@@ -92,5 +94,15 @@ public class Enemy : MonoBehaviour
         FindObjectOfType<LevelController>().AreEnemiesDead();
         GameController.Score += Cost;
         GameController.EnemiesKilled++;
+    }
+
+    IEnumerator MakeSound()
+    {
+        while (true)
+        {
+            GetComponent<AudioSource>().clip = livingSound;
+            GetComponent<AudioSource>().Play();
+            yield return new WaitForSeconds(UnityEngine.Random.Range(1f, 3f));
+        }
     }
 }

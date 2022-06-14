@@ -5,32 +5,32 @@ using UnityEngine;
 public class BulletController : MonoBehaviour
 {
 
-    public float Lifetime;
-    public GameObject Particles;
-    public GameObject Splash;
+    [SerializeField] float lifetime;
+    [SerializeField] GameObject particles;
+    [SerializeField] GameObject splash;
+    [SerializeField] AudioClip splashSound;
 
-    // Start is called before the first frame update
+    public float Lifetime
+    {
+        get { return lifetime; }
+        set { lifetime = value; }
+    }
+
     void Start()
     {
         StartCoroutine(DeathDelay());
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     IEnumerator DeathDelay()
-    {
-        yield return new WaitForSeconds(Lifetime);        
+    {        
+        yield return new WaitForSeconds(lifetime);        
         Destroy(gameObject);
     }
 
     private void OnDestroy()
     {
-        Instantiate(Particles, transform.position, transform.rotation);
-        Instantiate(Splash, transform.position, transform.rotation);
+        AudioSource.PlayClipAtPoint(splashSound, new Vector3(0, 0, -10));
+        Instantiate(particles, transform.position, transform.rotation);
+        Instantiate(splash, transform.position, transform.rotation);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

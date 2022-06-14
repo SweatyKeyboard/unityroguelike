@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RoamingEnemy : Enemy
 {
-    public Common.RoamingType Type;
-    public float TrailLength;
-    public GameObject Trail;
+    [SerializeField] Common.RoamingType type;
+    [SerializeField] float trailLength;
+    [SerializeField] GameObject trail;
 
     bool movingNow = false;
     bool trailStopper = false;
@@ -16,13 +14,12 @@ public class RoamingEnemy : Enemy
     public override void Start()
     {
         base.Start();
-
-        Trail.GetComponent<EnemyTrail>().Length = TrailLength;
-
+          
+        trail.GetComponent<EnemyTrail>().Length = trailLength;
     }
     public override void Move()
     {
-        if (Type == Common.RoamingType.FollowPlayer)
+        if (type == Common.RoamingType.FollowPlayer)
         {
             Vector3 difference = target.transform.position - transform.position;
             float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
@@ -31,8 +28,9 @@ public class RoamingEnemy : Enemy
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime);
             transform.position = Vector2.MoveTowards(transform.position, target.transform.position, Speed * Time.deltaTime);
         }
-        else if (Type == Common.RoamingType.Random)
+        else if (type == Common.RoamingType.Random)
         {
+           
             if (!movingNow)
             {
                 movingNow = true;
@@ -48,10 +46,9 @@ public class RoamingEnemy : Enemy
             transform.rotation = Quaternion.Slerp(transform.rotation, targetAngle, Time.deltaTime);
             transform.position = Vector2.MoveTowards(transform.position, targetPosition, Speed * Time.deltaTime);
         }
-
         if (!trailStopper)
         {
-            Instantiate(Trail, transform.position, transform.rotation);
+            Instantiate(trail, transform.position, transform.rotation);
             trailStopper = true;
             Invoke("TrailStart", 0.2f / Speed);
         }

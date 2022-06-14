@@ -3,19 +3,12 @@ using UnityEngine;
 public class Downfloor : MonoBehaviour
 {
 
-    public bool isOpen = false;
+    bool isOpen = false;
     bool stopWatchingButton = false;
 
-
-    // Start is called before the first frame update
     void Start()
     {
         GetComponent<Collider2D>().enabled = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {    
     }
 
     public void Open()

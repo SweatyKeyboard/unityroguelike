@@ -16,7 +16,7 @@ public class InfoText : MonoBehaviour
         {
             text = s;
             length = l;
-            color = Color.white;
+            color = new Color(1,1,1,1);
         }
 
         public Message(string s, float l, Color c)
@@ -28,49 +28,33 @@ public class InfoText : MonoBehaviour
     }
 
     Queue<Message> queue = new Queue<Message>();
-    bool showingNow;
-    float endTime;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    bool showingNow = false;
 
-    // Update is called once per frame
-    void Update()
+    public void TryShow()
     {
         if (!showingNow)
         {
-            if (queue.Count > 0)
-            {
-                showingNow = true;
-                Message m = queue.Dequeue();
-                endTime = Time.time + m.length;
-
-                GetComponent<Text>().text = m.text;
-                GetComponent<Text>().color = m.color;
-            }
-        }
-        else
-        if (Time.time > endTime)
-        {
-            HideText();
+            showingNow = true;
+            StartCoroutine(Timer());
         }
     }
 
     public void ShowText(string text, float time)
     {
-        queue.Enqueue(new Message(text, time));
+        Message m = new Message(text, time);
+        queue.Enqueue(m);
+        TryShow();
     }
 
     public void ShowText(string text, float time, Color col)
     {
         queue.Enqueue(new Message(text, time, col));
+        TryShow();
     }
 
     public void ShowText(string text)
     {
-        if (queue.Count == 0)
+        if (!showingNow)
         {
             GetComponent<Text>().text = text;
             GetComponent<Text>().color = Color.white;
@@ -79,8 +63,27 @@ public class InfoText : MonoBehaviour
 
     public void HideText()
     {
-        GetComponent<Text>().color = new Color(1, 1, 1, 0);
+        if (!showingNow)
+        {
+            GetComponent<Text>().color = new Color(1, 1, 1, 0);
+            GetComponent<Text>().text = "";
+        }
+    }
+
+    IEnumerator Timer()
+    {
+        while (queue.Count > 0)
+        {
+            Message m = queue.Dequeue();            
+            GetComponent<Text>().text = m.text;
+            GetComponent<Text>().color = m.color;
+            Color cc = GetComponent<Text>().color;            
+
+            yield return new WaitForSeconds(m.length);            
+        }       
         showingNow = false;
+        HideText();
+        yield break;
     }
 
 }

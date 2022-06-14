@@ -4,18 +4,7 @@ using UnityEngine;
 
 public class EnemySpawn : MonoBehaviour
 {
-    public List<GameObject> types;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    [SerializeField] List<GameObject> types;
 
     public void Activate()
     {

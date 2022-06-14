@@ -10,6 +10,10 @@ public class LevelController : MonoBehaviour
     public int levelSize;
     public int center;
     public static int thisLevelType;
+    public GameObject FirstLevelBackPrefab;
+    GameObject FirstLevelBack;
+
+    [SerializeField] AudioClip nextLvlSound;
 
     int[,] roomPrototypes;
     Map map;
@@ -27,15 +31,20 @@ public class LevelController : MonoBehaviour
     void Start()
     {
         NewLevelPart1();
+        if (!Application.isMobilePlatform)
+            FirstLevelBack = Instantiate(FirstLevelBackPrefab, transform.position, transform.rotation);
     }
 
     public void NewLevelPart1()
     {
+        AudioSource.PlayClipAtPoint(nextLvlSound, Camera.main.transform.position);
         levelSize++;
         center = levelSize / 2;
         bossDefeated = false;
         thisLevelType = UnityEngine.Random.Range(0, 3);
         GameController.FloorsCompleted++;
+
+        Destroy(GameObject.FindGameObjectWithTag("Room"));
 
         Image overlay = GameObject.FindGameObjectWithTag("Overlay").GetComponent<Image>();
 
@@ -45,11 +54,10 @@ public class LevelController : MonoBehaviour
             new Color(0, 0, 0, 1),
             0.5f));
         Invoke("NewLevelPart2", 0.5f);
-
     }
 
     void NewLevelPart2()
-    {
+    {           
         foreach (GameObject room in GameObject.FindGameObjectsWithTag("Room"))
             Destroy(room);        
         foreach (GameObject p in GameObject.FindGameObjectsWithTag("Particles"))
@@ -196,6 +204,17 @@ public class LevelController : MonoBehaviour
 
     public void WalkToPart2()
     {
+        if (!Application.isMobilePlatform)
+        {
+            if (GameController.FloorsCompleted == 1 && playerPos == new Common.Coords(center, center))
+            {
+                FirstLevelBack = Instantiate(FirstLevelBackPrefab, transform.position, transform.rotation);
+            }
+            else
+            {
+                Destroy(FirstLevelBack);
+            }
+        }
         UpdateWalls();
 
         Destroy(GameObject.FindGameObjectWithTag("Room"));

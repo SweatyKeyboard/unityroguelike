@@ -12,7 +12,7 @@ public class PointsController : MonoBehaviour
     void Start()
     {
         if (PlayerPrefs.HasKey("CharacterPoints"))
-            Points = PlayerPrefs.GetInt("CharacterPoints");
+            Points = PlayerPrefs.GetInt("CharacterPoints") + 3;
         else
             Points = 3;
 
@@ -21,7 +21,7 @@ public class PointsController : MonoBehaviour
 
     public void ForceUpdate()
     {
-        Counter.text = "Очков осталось: " + Points;
+        Counter.text = "Points last: " + Points;
     }
 
     // Update is called once per frame
