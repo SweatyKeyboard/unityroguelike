@@ -6,8 +6,6 @@ public class Pickup : MonoBehaviour
     [SerializeField] Common.ItemType type;
     [SerializeField] AudioClip sound;
 
-
-
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
@@ -44,6 +42,45 @@ public class Pickup : MonoBehaviour
                     case Common.ItemType.HealthMs:
                         {
                             FindObjectOfType<Player>().AddHP(Common.HealthType.Mustard);
+                            FindObjectOfType<HudController>().UpdateHP();
+                            cost = 15;
+                        }
+                        break;
+
+                    case Common.ItemType.HealthBbq:
+                        {
+                            FindObjectOfType<Player>().AddHP(Common.HealthType.Bbq);
+                            FindObjectOfType<HudController>().UpdateHP();
+                            cost = 15;
+                        } break;
+
+                    case Common.ItemType.HealthChl:
+                        {
+                            FindObjectOfType<Player>().AddHP(Common.HealthType.Chili);
+                            FindObjectOfType<HudController>().UpdateHP();
+                            cost = 15;
+                        }
+                        break;
+
+                    case Common.ItemType.HealthChs:
+                        {
+                            FindObjectOfType<Player>().AddHP(Common.HealthType.Cheese);
+                            FindObjectOfType<HudController>().UpdateHP();
+                            cost = 15;
+                        }
+                        break;
+
+                    case Common.ItemType.HealthGar:
+                        {
+                            FindObjectOfType<Player>().AddHP(Common.HealthType.Garlic);
+                            FindObjectOfType<HudController>().UpdateHP();
+                            cost = 15;
+                        }
+                        break;
+
+                    case Common.ItemType.HealthSoy:
+                        {
+                            FindObjectOfType<Player>().AddHP(Common.HealthType.Soy);
                             FindObjectOfType<HudController>().UpdateHP();
                             cost = 15;
                         }
@@ -93,7 +130,7 @@ public class Pickup : MonoBehaviour
                         {
                             player.RateOfFireBar++;
                             player.UpdateCharacteristics();
-                            message = "Rate o fire up";
+                            message = "Rate oà fire up";
                             cost = 25;
                         }
                         break;

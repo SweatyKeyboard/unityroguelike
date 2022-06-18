@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
@@ -28,6 +27,9 @@ public class Player : MonoBehaviour
 
     [SerializeField] AudioClip hurtSound;
 
+    [SerializeField] GameObject ChilliTrail;
+    [SerializeField] GameObject GarlicSplash;
+
 
     Rigidbody2D player;
     Vector2 moveInput, moveVelocity;
@@ -39,6 +41,8 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+         Health = new int[8];
+
         if (Application.isMobilePlatform)
             mobile = true;
 
@@ -59,7 +63,7 @@ public class Player : MonoBehaviour
     public void UpdateCharacteristics()
     {
         RateOfFire = 1.6f - (float)(Math.Pow(RateOfFireBar, 0.9) / 5);
-        Damage = 2.6f + (float)(Math.Pow(1.5, DamageBar) / 10);
+        Damage = 2.6f + (float)(Math.Pow(1.5, DamageBar) / 7.5f);
         Range = 0.45f + (float)(Math.Pow(RangeBar, 0.9) / 7.94);
         Speed = 11 + SpeedBar * 2;
         BulletSpeed = 7 + BulletSpeedBar / 3;
@@ -159,8 +163,16 @@ public class Player : MonoBehaviour
                         Destroy(bars.Last());
                         Destroy(bars.Last());
 
-                        if (c == 2)
-                            GetComponent<TrailCreator>().MakeTrail();
+
+                        switch (c)
+                        {
+                            case 2: AddEffect(Common.Effects.ShotSpeedUp, 5f); break;
+                            case 3: AddEffect(Common.Effects.SpeedsUp, 3.5f); break;
+                            case 4: GlobalEffects.AddEffectForAllEnemies(Common.Effects.Slowdown, 5f); break;
+                            case 5: Instantiate(GarlicSplash, transform.position, transform.rotation); break;
+                            case 6: GetComponent<TrailCreator>().MakeTrail(); break;
+                            case 7: ChilliTrailStart(); break;
+                        }
                     }
 
                     break;
@@ -178,12 +190,15 @@ public class Player : MonoBehaviour
                 FindObjectOfType<GameController>().EndGame();
             }
             else
-            Invoke("stillAlive", 0.5f);
-
-           
+            Invoke("stillAlive", 0.5f);           
         }
+    }
 
-
+    void ChilliTrailStart()
+    {
+        invulnerable = true;
+        Speed += 10;
+        StartCoroutine(ChilliTrailCreator());
     }
 
     public void AddHP(Common.HealthType type)
@@ -204,7 +219,6 @@ public class Player : MonoBehaviour
         }
     }
 
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("EnemyBullet"))
@@ -212,5 +226,55 @@ public class Player : MonoBehaviour
             Hurt("Bullet");
             Destroy(collision.gameObject);
         }
+    }
+
+    public void AddEffect(Common.Effects effect, float duration)
+    {
+        switch (effect)
+        {
+            case Common.Effects.ShotSpeedUp:
+                StartCoroutine(ShotSpeedUpEffect(duration));
+                break;
+
+            case Common.Effects.SpeedsUp:
+                {
+                    StartCoroutine(BulletSppedUp(duration));
+                    StartCoroutine(SpeedUp(duration));
+                }
+                break;
+        }
+    }
+
+    IEnumerator ChilliTrailCreator()
+    {
+        for (int c = 0; c < 30; c++)
+        {
+            invulnerable = true;
+            Instantiate(ChilliTrail, transform.position, transform.rotation);
+            yield return new WaitForSeconds(0.05f);
+        }
+        Speed -= 10;
+        invulnerable = false;
+    }
+
+    IEnumerator ShotSpeedUpEffect(float duration)
+    {
+        RateOfFire /= 2;
+        yield return new WaitForSeconds(duration);
+        RateOfFire *= 2;
+    }
+
+    IEnumerator SpeedUp(float duration)
+    {
+        Speed += 3;
+        yield return new WaitForSeconds(duration);
+        Speed -= 3;
+    }
+
+    IEnumerator BulletSppedUp(float duration)
+    {
+        BulletSpeed += 3;
+        yield return new WaitForSeconds(duration);
+        BulletSpeed -= 3;
     }
 }

@@ -17,6 +17,11 @@ public class Enemy : MonoBehaviour
     protected Player target;
     bool invulnerable;
 
+    EffectList effects = new EffectList();
+    Color color = new Color(1, 1, 1, 1);
+
+    public EffectList Effects { get { return effects; } }
+
     public virtual void Start()
     {
         Health += (int)(Math.Pow(1.5, GameController.FloorsCompleted) * 2) / 3;
@@ -52,7 +57,7 @@ public class Enemy : MonoBehaviour
 
     void stillAlive()
     {
-        GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1f);
+        GetComponent<SpriteRenderer>().color = color;
         invulnerable = false;
     }
 
@@ -104,5 +109,45 @@ public class Enemy : MonoBehaviour
             GetComponent<AudioSource>().Play();
             yield return new WaitForSeconds(UnityEngine.Random.Range(1f, 3f));
         }
+    }
+
+    public void AddEffect(Common.Effects effect, float duration)
+    {
+
+        switch (effect)
+        {
+            case Common.Effects.Poison:
+                StartCoroutine(EffectPoison(duration));
+                break;
+            case Common.Effects.Slowdown:
+                StartCoroutine(EffectSlowDown(duration));
+                break;
+        }
+    }
+
+
+
+    IEnumerator EffectPoison(float dur)
+    {
+        color = new Color(0.6f, 1, 0.6f, 1);
+        GetComponent<SpriteRenderer>().color = color;
+        for (int c = 0; c < (int)dur; c++)
+        {            
+            Hurt(1, 0.5f);
+            yield return new WaitForSeconds(1f);
+        }
+        color = new Color(1, 1, 1, 1);
+        GetComponent<SpriteRenderer>().color = color;
+    }
+
+    IEnumerator EffectSlowDown(float dur)
+    {
+        color = new Color(0.8f, 0.6f, 0.4f, 1);
+        Speed /= 2;
+        GetComponent<SpriteRenderer>().color = color;
+        yield return new WaitForSeconds(dur);
+        Speed *= 2;
+        color = new Color(1, 1, 1, 1);
+        GetComponent<SpriteRenderer>().color = color;
     }
 }

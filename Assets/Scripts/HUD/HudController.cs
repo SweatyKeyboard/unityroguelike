@@ -7,17 +7,6 @@ using UnityEngine.UI;
 public class HudController : MonoBehaviour
 {
 
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public void UpdateHP()
     {
         GameObject[] bars = GameObject.FindGameObjectsWithTag("HealthHUD");
@@ -51,7 +40,17 @@ public class HudController : MonoBehaviour
 
             for (int bar = 0, hlth = 0; bar < typedBars; bar++)
             {
-                string sprite = (i == 1) ? "Mayo" : "Mustard";
+                string sprite = "";
+                switch (i)
+                {
+                    case 1: sprite = "Mayo";  break;
+                    case 2: sprite = "Cheese"; break;
+                    case 3: sprite = "Soy"; break;
+                    case 4: sprite = "Bbq"; break;
+                    case 5: sprite = "Garlic"; break;
+                    case 6: sprite = "Mustard"; break;
+                    case 7: sprite = "Chilli"; break;
+                }
                 if (hlth <= hp[i] - 1)
                 {
                     if (hlth == hp[i] - 1)

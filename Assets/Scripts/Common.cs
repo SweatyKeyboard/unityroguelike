@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Common
 {
@@ -8,7 +9,12 @@ public class Common
         Void = -1,
         Ketchup,
         Mayo,
+        Cheese,
+        Soy,        
+        Bbq,
+        Garlic,
         Mustard,
+        Chili
     }
 
     public enum ItemType
@@ -23,7 +29,12 @@ public class Common
         Cheese,
         Salad,
         Bacon,
-        Burger
+        Burger,
+        HealthSoy,
+        HealthBbq,
+        HealthGar,
+        HealthChl,
+        HealthChs
     }
 
     public enum InteractiveType
@@ -37,6 +48,14 @@ public class Common
     {
         FollowPlayer,
         Random
+    }
+
+    public enum Effects
+    {
+        Poison,
+        Slowdown,
+        ShotSpeedUp,
+        SpeedsUp
     }
 
     public struct Coords
@@ -66,4 +85,6 @@ public class Common
                 return true;
         }
     }
+
+  
 }

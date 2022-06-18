@@ -31,8 +31,8 @@ public class LevelController : MonoBehaviour
     void Start()
     {
         NewLevelPart1();
-        if (!Application.isMobilePlatform)
-            FirstLevelBack = Instantiate(FirstLevelBackPrefab, transform.position, transform.rotation);
+        //if (!Application.isMobilePlatform)
+        //    FirstLevelBack = Instantiate(FirstLevelBackPrefab, transform.position, transform.rotation);
     }
 
     public void NewLevelPart1()
@@ -396,6 +396,7 @@ public class LevelController : MonoBehaviour
                     {
                         if (roomPrototypes[x, y] != 0)
                         {
+                            
                             int thisNeighbors = 0;
                             for (int xxx = -1; xxx <= 1; xxx++)
                                 for (int yyy = -1; yyy <= 1; yyy++)
@@ -443,16 +444,18 @@ public class LevelController : MonoBehaviour
                                             catch { }
                                         }
 
-                                        /*if (x != 0 && roomPrototypes[x - 1, y] == 0)
-                                            possible.Add(new Common.Coords(x - 1, y));
-                                        if (x != 4 && roomPrototypes[x + 1, y] == 0)
-                                            possible.Add(new Common.Coords(x + 1, y));
-                                        if (y != 0 && roomPrototypes[x, y - 1] == 0)
-                                            possible.Add(new Common.Coords(x, y - 1));
-                                        if (y != 4 && roomPrototypes[x, y + 1] == 0)
-                                            possible.Add(new Common.Coords(x, y + 1));*/
+                                        
                                     }
                             }
+
+                            /*if (x != 0 && roomPrototypes[x - 1, y] == 0)
+                                possible.Add(new Common.Coords(x - 1, y));
+                            if (x != 4 && roomPrototypes[x + 1, y] == 0)
+                                possible.Add(new Common.Coords(x + 1, y));
+                            if (y != 0 && roomPrototypes[x, y - 1] == 0)
+                                possible.Add(new Common.Coords(x, y - 1));
+                            if (y != 4 && roomPrototypes[x, y + 1] == 0)
+                                possible.Add(new Common.Coords(x, y + 1));*/
                         }
 
                     }

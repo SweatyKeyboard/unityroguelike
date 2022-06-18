@@ -53,7 +53,7 @@ public class UpDown : MonoBehaviour
                 break;
             case 4:
                 {
-                    InfoUI.text = Math.Round((7 + Points / 3) * 0.0913890997, 2) + " field/sec";
+                    InfoUI.text = Math.Round((7 + Points / 3.0) * 0.0913890997, 2) + " field/sec";
                 }
                 break;
             case 5:

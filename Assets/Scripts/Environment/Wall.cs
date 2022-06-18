@@ -29,7 +29,7 @@ public class Wall : MonoBehaviour
             c = new Color(0.7f, 0.4f, 0.4f);
         else if (floorType == -1)
             c = new Color(0.7f, 0.6f, 0.4f);
-
+        
         GetComponent<Image>().color = c;
     }
 }
